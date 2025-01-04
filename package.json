@@ -9,15 +9,25 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "seekdf.helloWorld",
-        "title": "Hello World"
+        "command": "seekdf.searchFolders",
+        "title": "Search Folders"
       }
-    ]
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "seekdfTreeView",
+          "name": "SeekDF"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
