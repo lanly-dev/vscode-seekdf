@@ -1,4 +1,4 @@
-import { TreeDataProvider, TreeItem, TreeItemCollapsibleState, window } from 'vscode'
+import { TreeDataProvider, TreeItem, TreeItemCollapsibleState, window, EventEmitter, Event } from 'vscode'
 import { FolderInfo } from './interfaces'
 
 class FolderTreeItem extends TreeItem {
@@ -8,6 +8,10 @@ class FolderTreeItem extends TreeItem {
 }
 
 class FolderTreeDataProvider implements TreeDataProvider<FolderTreeItem> {
+  private _onDidChangeTreeData: EventEmitter<FolderTreeItem | undefined | void> =
+    new EventEmitter<FolderTreeItem | undefined | void>()
+  readonly onDidChangeTreeData: Event<FolderTreeItem | undefined | void> = this._onDidChangeTreeData.event
+
   constructor(private folders: FolderInfo[]) { }
 
   getTreeItem(element: FolderTreeItem): TreeItem {
@@ -20,9 +24,15 @@ class FolderTreeDataProvider implements TreeDataProvider<FolderTreeItem> {
 
     return this.folders.map(folder => new FolderTreeItem(folder.path, folder.parentName || ''))
   }
+
+  refresh(folders: FolderInfo[]): void {
+    this.folders = folders
+    this._onDidChangeTreeData.fire()
+  }
 }
 
-export function registerTreeDataProvider(folders: FolderInfo[]) {
+export function registerTreeDataProvider(folders: FolderInfo[]): FolderTreeDataProvider {
   const treeDataProvider = new FolderTreeDataProvider(folders)
-  window.registerTreeDataProvider('seekdfTreeView', treeDataProvider)
+  // window.registerTreeDataProvider('seekdfTreeView', treeDataProvider)
+  return treeDataProvider
 }

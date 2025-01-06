@@ -4,15 +4,18 @@ import { searchFolders } from './actions'
 
 export function activate(context: ExtensionContext) {
   const rc = commands.registerCommand
-  context.subscriptions.concat([
+  const treeDataProvider = registerTreeDataProvider([])
+  // window.createTreeView('seekdfTreeView', { treeDataProvider })
+
+  context.subscriptions.push(
     rc('seekdf.searchFolders', async () => {
       const targetName = await window.showInputBox({ prompt: 'Enter the target folder name' })
       if (targetName) {
         const folders = await searchFolders(null, targetName)
-        registerTreeDataProvider(folders)
+        treeDataProvider.refresh(folders)
       }
     })
-  ])
+  )
 }
 
 // This method is called when your extension is deactivated
