@@ -2,11 +2,10 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as vscode from 'vscode'
 import { TargetInfo } from './interfaces'
-import { get } from 'http'
 
 function getCurrentWorkspacePath(): string {
-  const workspaceFolders = vscode.workspace.workspaceFolders
-  if (workspaceFolders && workspaceFolders.length > 0) return workspaceFolders[0].uri.fsPath
+  const { workspaceFolders } = vscode.workspace
+  if (workspaceFolders?.length) return workspaceFolders[0].uri.fsPath
   throw new Error('No workspace folder is open')
 }
 
@@ -20,12 +19,10 @@ function getDirSize(folderPath: string): number {
     if (stats.isFile()) totalSize += stats.size
     else if (stats.isDirectory()) totalSize += getDirSize(filePath)
   }
-
   return totalSize
 }
 
-export async function seekDirs(dir: string | null, targetName: string): Promise<TargetInfo[]> {
-  if (!dir) dir = getCurrentWorkspacePath()
+export async function seekDirs(dir: string, targetName: string): Promise<TargetInfo[]> {
 
   let foundFolders: TargetInfo[] = []
   const items = fs.readdirSync(dir, { withFileTypes: true })
@@ -52,8 +49,7 @@ export async function seekDirs(dir: string | null, targetName: string): Promise<
   return foundFolders
 }
 
-export async function seekFiles(dir: string | null, targetName: string): Promise<TargetInfo[]> {
-  if (!dir) dir = getCurrentWorkspacePath()
+export async function seekFiles(dir: string, targetName: string): Promise<TargetInfo[]> {
 
   let foundFiles: TargetInfo[] = []
   const items = fs.readdirSync(dir, { withFileTypes: true })
@@ -76,4 +72,10 @@ export async function seekFiles(dir: string | null, targetName: string): Promise
     }
   }
   return foundFiles
+}
+
+export async function seek(targetName: string, type: 'dir' | 'file'): Promise<TargetInfo[]> {
+  const workspacePath = getCurrentWorkspacePath()
+  if (type === 'dir') return seekDirs(workspacePath, targetName)
+  return seekFiles(workspacePath, targetName)
 }

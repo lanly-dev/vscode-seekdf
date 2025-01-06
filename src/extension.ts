@@ -1,24 +1,24 @@
 import { ExtensionContext, window, commands } from 'vscode'
 import { registerTreeDataProvider } from './treeview'
-import { seekDirs, seekFiles } from './actions'
+import { seek } from './actions'
 
 export function activate(context: ExtensionContext) {
   const rc = commands.registerCommand
   const treeDataProvider = registerTreeDataProvider([])
 
   context.subscriptions.push(
-    rc('seekdf.searchFolders', async () => {
-      const targetName = await window.showInputBox({ prompt: 'Enter the target folder name' })
+    rc('seekdf.seekDirs', async () => {
+      const targetName = await window.showInputBox({ prompt: 'Enter the target directory name' })
       if (targetName) {
-        const folders = await seekDirs(null, targetName)
-        treeDataProvider.refresh(folders)
+        const folders = await seek(targetName, 'dir')
+        treeDataProvider.refresh([{ text: targetName, kids: folders }])
       }
     }),
-    rc('seekdf.searchFiles', async () => {
-      const targetName = await window.showInputBox({ prompt: 'Enter the target file name' })
+    rc('seekdf.seekFiles', async () => {
+      const targetName = await window.showInputBox({ prompt: 'Enter the target files name' })
       if (targetName) {
-        const files = await seekFiles(null, targetName)
-        treeDataProvider.refresh(files)
+        const files = await seek(targetName, 'file')
+        treeDataProvider.refresh([{ text: targetName, kids: files }])
       }
     })
   )

@@ -1,7 +1,7 @@
 import * as assert from 'assert'
 
 import * as vscode from 'vscode'
-import { seekDirs } from '../actions'
+import { seek } from '../actions'
 
 suite('Extension Test Suite', () => {
   vscode.window.showInformationMessage('Start all tests.')
@@ -13,7 +13,7 @@ suite('Extension Test Suite', () => {
 
   test('seekDirs command', async () => {
     const targetName = 'targetName'
-    const folders = await seekDirs(null, targetName)
+    const folders = await seek(targetName, 'dir')
     assert.ok(Array.isArray(folders), 'Expected folders to be an array')
     // Add more assertions based on expected behavior
   })
