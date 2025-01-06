@@ -1,5 +1,5 @@
 import { TreeDataProvider, TreeItem, TreeItemCollapsibleState, window, EventEmitter, Event } from 'vscode'
-import { FolderInfo } from './interfaces'
+import { TargetInfo } from './interfaces'
 
 class FolderTreeItem extends TreeItem {
   constructor(public readonly label: string, public readonly parentName: string) {

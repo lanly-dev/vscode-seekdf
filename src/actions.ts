@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as vscode from 'vscode'
-import { FolderInfo } from './interfaces'
+import { TargetInfo } from './interfaces'
 
 function getCurrentWorkspacePath(): string {
   const workspaceFolders = vscode.workspace.workspaceFolders
@@ -23,10 +23,10 @@ function getFolderSize(folderPath: string): number {
   return totalSize
 }
 
-export async function searchFolders(dir: string | null, targetName: string): Promise<FolderInfo[]> {
+export async function searchFolders(dir: string | null, targetName: string): Promise<TargetInfo[]> {
   if (!dir) dir = getCurrentWorkspacePath()
 
-  let foundFolders: FolderInfo[] = []
+  let foundFolders: TargetInfo[] = []
   const items = fs.readdirSync(dir, { withFileTypes: true })
 
   for (const item of items) {
@@ -48,4 +48,30 @@ export async function searchFolders(dir: string | null, targetName: string): Pro
     }
   }
   return foundFolders
+}
+
+export async function searchFiles(dir: string | null, targetName: string): Promise<TargetInfo[]> {
+  if (!dir) dir = getCurrentWorkspacePath()
+
+  let foundFiles: TargetInfo[] = []
+  const items = fs.readdirSync(dir, { withFileTypes: true })
+
+  for (const item of items) {
+    const itemPath = path.join(dir, item.name)
+
+    if (item.isFile() && item.name === targetName) {
+      const stats = fs.statSync(itemPath)
+      foundFiles.push({
+        type: 'file',
+        path: itemPath,
+        size: stats.size,
+        parent: dir,
+        parentName: path.basename(dir)
+      })
+    } else if (item.isDirectory()) {
+      const subFiles = await searchFiles(itemPath, targetName)
+      foundFiles = foundFiles.concat(subFiles)
+    }
+  }
+  return foundFiles
 }

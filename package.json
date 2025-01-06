@@ -18,6 +18,10 @@
       {
         "command": "seekdf.searchFolders",
         "title": "Search Folders"
+      },
+      {
+        "command": "seekdf.searchFiles",
+        "title": "Search Files"
       }
     ],
     "views": {

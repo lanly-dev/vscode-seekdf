@@ -1,11 +1,10 @@
 import { ExtensionContext, window, commands } from 'vscode'
 import { registerTreeDataProvider } from './treeview'
-import { searchFolders } from './actions'
+import { searchFolders, searchFiles } from './actions'
 
 export function activate(context: ExtensionContext) {
   const rc = commands.registerCommand
   const treeDataProvider = registerTreeDataProvider([])
-  // window.createTreeView('seekdfTreeView', { treeDataProvider })
 
   context.subscriptions.push(
     rc('seekdf.searchFolders', async () => {
@@ -13,6 +12,13 @@ export function activate(context: ExtensionContext) {
       if (targetName) {
         const folders = await searchFolders(null, targetName)
         treeDataProvider.refresh(folders)
+      }
+    }),
+    rc('seekdf.searchFiles', async () => {
+      const targetName = await window.showInputBox({ prompt: 'Enter the target file name' })
+      if (targetName) {
+        const files = await searchFiles(null, targetName)
+        treeDataProvider.refresh(files)
       }
     })
   )

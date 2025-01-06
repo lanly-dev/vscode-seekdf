@@ -1,6 +1,12 @@
-export interface FolderInfo {
-  path: string;
-  size: number;
-  parent: string | null;
-  parentName: string | null;
+export interface TargetInfo {
+  type: 'folder' | 'file'
+  path: string
+  size: number
+  parent: string | null
+  parentName: string | null
+}
+
+export interface TermSearch {
+  kids: TargetInfo[]
+  text: string
 }
