@@ -1,5 +1,10 @@
+export enum TargetType {
+  DIR = 'dir',
+  FILE = 'file'
+}
+
 export interface TargetInfo {
-  type: 'dir' | 'file'
+  type: TargetType
   path: string
   size: number
   parent: string | null

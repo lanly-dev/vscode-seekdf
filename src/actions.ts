@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as vscode from 'vscode'
-import { TargetInfo } from './interfaces'
+import { TargetInfo, TargetType } from './interfaces'
 
 function getCurrentWorkspacePath(): string {
   const { workspaceFolders } = vscode.workspace
@@ -74,8 +74,8 @@ export async function seekFiles(dir: string, targetName: string): Promise<Target
   return foundFiles
 }
 
-export async function seek(targetName: string, type: 'dir' | 'file'): Promise<TargetInfo[]> {
+export async function seek(targetName: string, type: TargetType): Promise<TargetInfo[]> {
   const workspacePath = getCurrentWorkspacePath()
-  if (type === 'dir') return seekDirs(workspacePath, targetName)
+  if (type === TargetType.DIR) return seekDirs(workspacePath, targetName)
   return seekFiles(workspacePath, targetName)
 }
