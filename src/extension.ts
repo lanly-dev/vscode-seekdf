@@ -8,7 +8,7 @@ export function activate(context: ExtensionContext) {
     rc('seekdf.searchFolders', async () => {
       const targetName = await window.showInputBox({ prompt: 'Enter the target folder name' })
       if (targetName) {
-        const folders = await searchFolders(targetName)
+        const folders = await searchFolders(null, targetName)
         registerTreeDataProvider(folders)
       }
     })

@@ -14,8 +14,8 @@ suite('Extension Test Suite', () => {
   })
 
   test('searchFolders command', async () => {
-    const targetFolderName = 'targetFolderName'
-    const folders = await searchFolders(targetFolderName)
+    const targetName = 'targetName'
+    const folders = await searchFolders(null, targetName)
     assert.ok(Array.isArray(folders), 'Expected folders to be an array')
     // Add more assertions based on expected behavior
   })
