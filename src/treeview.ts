@@ -25,6 +25,3 @@ export function registerTreeDataProvider(folders: string[]) {
   const treeDataProvider = new FolderTreeDataProvider(folders)
   window.registerTreeDataProvider('seekdfTreeView', treeDataProvider)
 }
-
-// Example usage
-registerTreeDataProvider(['folder1', 'folder2'])
