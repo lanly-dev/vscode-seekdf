@@ -23,21 +23,20 @@ function getDirSize(folderPath: string): number {
   return totalSize
 }
 
-export async function seekDirs(dir: string, targetName: string): Promise<TargetInfo[]> {
+export async function seekDirs(thePath: string, targetName: string): Promise<TargetInfo[]> {
   let foundFolders: TargetInfo[] = []
-  const items = fs.readdirSync(dir, { withFileTypes: true })
+  const items = fs.readdirSync(thePath, { withFileTypes: true })
 
   for (const item of items) {
-    const itemPath = path.join(dir, item.name)
+    const itemPath = path.join(thePath, item.name)
 
     if (item.isDirectory() && item.name === targetName) {
-      const stats = fs.statSync(itemPath)
       foundFolders.push({
         type: DIR,
         path: itemPath,
         size: getDirSize(itemPath),
-        parent: dir,
-        parentName: path.basename(dir)
+        parent: thePath,
+        parentName: path.basename(thePath)
       })
     }
 
@@ -47,13 +46,13 @@ export async function seekDirs(dir: string, targetName: string): Promise<TargetI
   return foundFolders
 }
 
-export async function seekFiles(dir: string, targetName: string): Promise<TargetInfo[]> {
+export async function seekFiles(thePath: string, targetName: string): Promise<TargetInfo[]> {
 
   let foundFiles: TargetInfo[] = []
-  const items = fs.readdirSync(dir, { withFileTypes: true })
+  const items = fs.readdirSync(thePath, { withFileTypes: true })
 
   for (const item of items) {
-    const itemPath = path.join(dir, item.name)
+    const itemPath = path.join(thePath, item.name)
 
     if (item.isFile() && item.name === targetName) {
       const stats = fs.statSync(itemPath)
@@ -61,8 +60,8 @@ export async function seekFiles(dir: string, targetName: string): Promise<Target
         type: FILE,
         path: itemPath,
         size: stats.size,
-        parent: dir,
-        parentName: path.basename(dir)
+        parent: thePath,
+        parentName: path.basename(thePath)
       })
     } else if (item.isDirectory()) {
       const subFiles = await seekFiles(itemPath, targetName)
