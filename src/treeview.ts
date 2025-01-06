@@ -12,7 +12,7 @@ class FolderTreeDataProvider implements TreeDataProvider<FolderTreeItem> {
     new EventEmitter<FolderTreeItem | undefined | void>()
   readonly onDidChangeTreeData: Event<FolderTreeItem | undefined | void> = this._onDidChangeTreeData.event
 
-  constructor(private folders: FolderInfo[]) { }
+  constructor(private folders: TargetInfo[]) { }
 
   getTreeItem(element: FolderTreeItem): TreeItem {
     return element
@@ -25,13 +25,13 @@ class FolderTreeDataProvider implements TreeDataProvider<FolderTreeItem> {
     return this.folders.map(folder => new FolderTreeItem(folder.path, folder.parentName || ''))
   }
 
-  refresh(folders: FolderInfo[]): void {
+  refresh(folders: TargetInfo[]): void {
     this.folders = folders
     this._onDidChangeTreeData.fire()
   }
 }
 
-export function registerTreeDataProvider(folders: FolderInfo[]): FolderTreeDataProvider {
+export function registerTreeDataProvider(folders: TargetInfo[]): FolderTreeDataProvider {
   const treeDataProvider = new FolderTreeDataProvider(folders)
   // window.registerTreeDataProvider('seekdfTreeView', treeDataProvider)
   return treeDataProvider

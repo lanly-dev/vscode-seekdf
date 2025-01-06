@@ -2,6 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as vscode from 'vscode'
 import { TargetInfo } from './interfaces'
+import { get } from 'http'
 
 function getCurrentWorkspacePath(): string {
   const workspaceFolders = vscode.workspace.workspaceFolders
@@ -9,7 +10,7 @@ function getCurrentWorkspacePath(): string {
   throw new Error('No workspace folder is open')
 }
 
-function getFolderSize(folderPath: string): number {
+function getDirSize(folderPath: string): number {
   const files = fs.readdirSync(folderPath)
   let totalSize = 0
 
@@ -17,13 +18,13 @@ function getFolderSize(folderPath: string): number {
     const filePath = path.join(folderPath, file)
     const stats = fs.statSync(filePath)
     if (stats.isFile()) totalSize += stats.size
-    else if (stats.isDirectory()) totalSize += getFolderSize(filePath)
+    else if (stats.isDirectory()) totalSize += getDirSize(filePath)
   }
 
   return totalSize
 }
 
-export async function searchFolders(dir: string | null, targetName: string): Promise<TargetInfo[]> {
+export async function seekDirs(dir: string | null, targetName: string): Promise<TargetInfo[]> {
   if (!dir) dir = getCurrentWorkspacePath()
 
   let foundFolders: TargetInfo[] = []
@@ -36,21 +37,22 @@ export async function searchFolders(dir: string | null, targetName: string): Pro
       if (item.name === targetName) {
         const stats = fs.statSync(itemPath)
         foundFolders.push({
+          type: 'dir',
           path: itemPath,
-          size: getFolderSize(itemPath),
+          size: getDirSize(itemPath),
           parent: dir,
           parentName: path.basename(dir)
         })
       }
 
-      const subFolders = await searchFolders(itemPath, targetName)
+      const subFolders = await seekDirs(itemPath, targetName)
       foundFolders = foundFolders.concat(subFolders)
     }
   }
   return foundFolders
 }
 
-export async function searchFiles(dir: string | null, targetName: string): Promise<TargetInfo[]> {
+export async function seekFiles(dir: string | null, targetName: string): Promise<TargetInfo[]> {
   if (!dir) dir = getCurrentWorkspacePath()
 
   let foundFiles: TargetInfo[] = []
@@ -69,7 +71,7 @@ export async function searchFiles(dir: string | null, targetName: string): Promi
         parentName: path.basename(dir)
       })
     } else if (item.isDirectory()) {
-      const subFiles = await searchFiles(itemPath, targetName)
+      const subFiles = await seekFiles(itemPath, targetName)
       foundFiles = foundFiles.concat(subFiles)
     }
   }

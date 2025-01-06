@@ -1,5 +1,5 @@
 export interface TargetInfo {
-  type: 'folder' | 'file'
+  type: 'dir' | 'file'
   path: string
   size: number
   parent: string | null

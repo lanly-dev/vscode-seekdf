@@ -16,12 +16,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "seekdf.searchFolders",
-        "title": "Search Folders"
+        "command": "seekdf.seekDirs",
+        "title": "Seekdf directories"
       },
       {
-        "command": "seekdf.searchFiles",
-        "title": "Search Files"
+        "command": "seekdf.seekFiles",
+        "title": "Seekdf Files"
       }
     ],
     "views": {
