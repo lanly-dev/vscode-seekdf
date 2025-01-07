@@ -15,7 +15,7 @@ export function activate(context: ExtensionContext) {
       if (targetName) treeDataProvider.addTerm(await seek(targetName, DIR))
     }),
     rc('seekdf.seekFiles', async () => {
-      const targetName = await window.showInputBox({ prompt: 'Enter the target files name' })
+      const targetName = await window.showInputBox({ prompt: 'Enter the target file name' })
       if (targetName) treeDataProvider.addTerm(await seek(targetName, FILE))
     })
   )
