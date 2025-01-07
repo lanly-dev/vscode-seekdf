@@ -32,17 +32,19 @@ export async function seekDirs(thePath: string, targetName: string): Promise<Tar
     const itemPath = path.join(thePath, item.name)
 
     if (item.name === targetName) {
+      const subFolders = await seekDirs(itemPath, targetName)
       foundFolders.push({
         type: DIR,
         path: itemPath,
         size: getDirSize(itemPath),
         parent: thePath,
-        parentName: path.basename(thePath)
+        parentName: path.basename(thePath),
+        kids: subFolders
       })
+    } else {
+      const subFolders = await seekDirs(itemPath, targetName)
+      foundFolders = foundFolders.concat(subFolders)
     }
-
-    const subFolders = await seekDirs(itemPath, targetName)
-    foundFolders = foundFolders.concat(subFolders)
   }
   return foundFolders
 }
@@ -61,7 +63,8 @@ export async function seekFiles(thePath: string, targetName: string): Promise<Ta
         path: itemPath,
         size: stats.size,
         parent: thePath,
-        parentName: path.basename(thePath)
+        parentName: path.basename(thePath),
+        kids: null
       })
     } else if (item.isDirectory()) {
       const subFiles = await seekFiles(itemPath, targetName)

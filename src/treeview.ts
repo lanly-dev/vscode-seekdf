@@ -1,5 +1,5 @@
 import { TreeDataProvider, TreeItem, TreeItemCollapsibleState as CoState, window, EventEmitter, Event } from 'vscode'
-import { TermSearch } from './interfaces'
+import { TargetInfo, TermSearch } from './interfaces'
 const { Expanded, None } = CoState
 
 class TermTreeItem extends TreeItem {
@@ -7,16 +7,15 @@ class TermTreeItem extends TreeItem {
     public readonly text: string,
     public readonly collapsibleState: CoState,
     public readonly index: number,
-    public readonly totalCount: number
+    public readonly kids: TargetInfo[] | null
   ) {
-    super(`${index + 1}. ${text} (Total: ${totalCount})`, collapsibleState)
+    super(`${index + 1}. ${text} (Total: ${kids?.length})`, collapsibleState)
   }
 }
 
 class TermTreeDataProvider implements TreeDataProvider<TermTreeItem> {
-  private _onDidChangeTreeData: EventEmitter<TermTreeItem | undefined | void> =
-    new EventEmitter<TermTreeItem | undefined | void>()
-  readonly onDidChangeTreeData: Event<TermTreeItem | undefined | void> = this._onDidChangeTreeData.event
+  private _onDidChangeTreeData: EventEmitter<void> = new EventEmitter<void>()
+  readonly onDidChangeTreeData: Event<void> = this._onDidChangeTreeData.event
 
   constructor(private terms: TermSearch[]) { }
 
@@ -26,20 +25,18 @@ class TermTreeDataProvider implements TreeDataProvider<TermTreeItem> {
   }
 
   getChildren(element?: TermTreeItem): TermTreeItem[] {
-    if (!element) {
-      return this.terms.map((term, index) =>
-        new TermTreeItem(term.text, Expanded, index, this.terms.length))
-    } else {
-      const term = this.terms.find(t => t.text === element.text)
-      if (term) {
-        return term.kids.map((kid, index) =>
-          new TermTreeItem(kid.path, None, index, term.kids.length))
-      }
+    if (!element) return this.terms.map((term, index) => new TermTreeItem(term.text, Expanded, index, term.kids))
+    else {
+      if (!element.kids) return []
+      return element.kids?.map((kid, index) =>
+        new TermTreeItem(kid.path, kid.kids?.length ? Expanded : None, index, kid.kids))
+
     }
     return []
   }
 
   addTerm(term: TermSearch): void {
+    console.log(term)
     this.terms.push(term)
     this._onDidChangeTreeData.fire()
   }
