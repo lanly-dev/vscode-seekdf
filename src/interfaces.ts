@@ -17,4 +17,5 @@ export interface TermSearch {
   text: string
   kids: TargetInfo[] | null,
   totalSize: number
+  type: TargetType
 }

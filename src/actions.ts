@@ -93,5 +93,5 @@ export async function seek(targetName: string, type: TargetType): Promise<TermSe
     calculateTotalSize(kids)
   }
 
-  return { text: targetName, kids, totalSize }
+  return { text: targetName, kids, totalSize, type }
 }
