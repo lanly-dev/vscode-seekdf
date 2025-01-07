@@ -10,7 +10,7 @@ export interface TargetInfo {
   size: number
   parent: string | null
   parentName: string | null
-  kids: TargetInfo[] | null
+  kids?: TargetInfo[] | null
 }
 
 export interface TermSearch {

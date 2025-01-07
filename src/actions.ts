@@ -67,8 +67,7 @@ export async function seekFiles(thePath: string, targetName: string): Promise<Ta
         path: itemPath,
         size: stats.size,
         parent: thePath,
-        parentName,
-        kids: null
+        parentName
       })
     } else if (item.isDirectory()) {
       const subFiles = await seekFiles(itemPath, targetName)

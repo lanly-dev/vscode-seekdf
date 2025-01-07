@@ -1,4 +1,4 @@
-import { TreeDataProvider, TreeItem, window, EventEmitter, Event, commands, Uri } from 'vscode'
+import { TreeDataProvider, TreeItem, window, EventEmitter, Event, commands, Uri, ThemeIcon } from 'vscode'
 import { TargetInfo, TermSearch } from './interfaces'
 import { TreeItemCollapsibleState as CoState } from 'vscode'
 
@@ -14,8 +14,8 @@ let showIndexAndCount = true // Add a global variable to track the toggle state
 class SeekTreeItem extends TreeItem {
   constructor(
     text: string,
-    public readonly kids: TargetInfo[] | null,
     public readonly size: number,
+    public readonly kids?: TargetInfo[] | null,
     public readonly index?: number,
     public readonly path?: string
   ) {
@@ -29,6 +29,9 @@ class SeekTreeItem extends TreeItem {
     const humanReadableSize = prettyBytes(size)
     const label = showIndexAndCount ? `${i}${text} ${count} - ${humanReadableSize}` : text
     super(label, cState)
+
+    // Set icon based on whether it's a directory or file
+    this.iconPath = kids ? new ThemeIcon('folder') : new ThemeIcon('file')
   }
 }
 
@@ -44,10 +47,10 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   }
 
   getChildren(element?: SeekTreeItem): SeekTreeItem[] {
-    if (!element) return this.terms.map((term) => new SeekTreeItem(term.text, term.kids, term.totalSize))
+    if (!element) return this.terms.map((term) => new SeekTreeItem(term.text, term.totalSize, term.kids))
     else {
       if (!element.kids) return []
-      return element.kids.map((kid, index) => new SeekTreeItem(kid.name, kid.kids, kid.size, index, kid.path))
+      return element.kids.map((kid, index) => new SeekTreeItem(kid.name, kid.size, kid.kids, index, kid.path))
     }
   }
 
@@ -73,7 +76,8 @@ export function registerTreeDataProvider(terms: TermSearch[]): SeekTreeDataProvi
 
   // Register the reveal in file explorer command
   commands.registerCommand('seekdf.revealInFileExplorer', (item: SeekTreeItem) => {
-    const uri = Uri.file(item.kids ? item.kids[0].path : item.path)
+    if (!item.path) return
+    const uri = Uri.file(item.path)
     commands.executeCommand('revealFileInOS', uri)
   })
 
