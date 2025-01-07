@@ -28,7 +28,7 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   }
 
   getChildren(element?: SeekTreeItem): SeekTreeItem[] {
-    if (!element) return this.terms.map((term, index) => new SeekTreeItem(term.text, term.kids, 0))
+    if (!element) return this.terms.map((term) => new SeekTreeItem(term.text, term.kids, term.totalSize))
     else {
       if (!element.kids) return []
       return element.kids.map((kid, index) => new SeekTreeItem(kid.name, kid.kids, kid.size, index))

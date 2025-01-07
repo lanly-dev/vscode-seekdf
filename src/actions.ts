@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as vscode from 'vscode'
-import { TargetInfo, TargetType } from './interfaces'
+import { TargetInfo, TargetType, TermSearch } from './interfaces'
 const { DIR, FILE } = TargetType
 
 function getCurrentWorkspacePath(): string {
@@ -78,8 +78,21 @@ export async function seekFiles(thePath: string, targetName: string): Promise<Ta
   return foundFiles ? foundFiles : null
 }
 
-export async function seek(targetName: string, type: TargetType): Promise<TargetInfo[] | null> {
+export async function seek(targetName: string, type: TargetType): Promise<TermSearch> {
   const workspacePath = getCurrentWorkspacePath()
   const fn = type === DIR ? seekDirs : seekFiles
-  return fn(workspacePath, targetName)
+  const kids = await fn(workspacePath, targetName)
+
+  let totalSize = 0
+  if (kids) {
+    const calculateTotalSize = (items: TargetInfo[]) => {
+      for (const item of items) {
+        totalSize += item.size
+        if (item.kids) calculateTotalSize(item.kids)
+      }
+    }
+    calculateTotalSize(kids)
+  }
+
+  return { text: targetName, kids, totalSize }
 }

@@ -12,20 +12,14 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(
     rc('seekdf.seekDirs', async () => {
       const targetName = await window.showInputBox({ prompt: 'Enter the target directory name' })
-      if (targetName) {
-        const dirs = await seek(targetName, DIR)
-        treeDataProvider.addTerm({ text: targetName, kids: dirs })
-      }
+      if (targetName) treeDataProvider.addTerm(await seek(targetName, DIR))
     }),
     rc('seekdf.seekFiles', async () => {
       const targetName = await window.showInputBox({ prompt: 'Enter the target files name' })
-      if (targetName) {
-        const files = await seek(targetName, FILE)
-        treeDataProvider.addTerm({ text: targetName, kids: files })
-      }
+      if (targetName) treeDataProvider.addTerm(await seek(targetName, FILE))
     })
   )
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
