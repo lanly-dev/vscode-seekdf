@@ -1,4 +1,4 @@
-import { TreeDataProvider, TreeItem, window, EventEmitter, Event, commands } from 'vscode'
+import { TreeDataProvider, TreeItem, window, EventEmitter, Event, commands, Uri } from 'vscode'
 import { TargetInfo, TermSearch } from './interfaces'
 import { TreeItemCollapsibleState as CoState } from 'vscode'
 
@@ -16,7 +16,8 @@ class SeekTreeItem extends TreeItem {
     text: string,
     public readonly kids: TargetInfo[] | null,
     public readonly size: number,
-    public readonly index?: number
+    public readonly index?: number,
+    public readonly path?: string
   ) {
     let i = ''
     let cState = None
@@ -38,6 +39,7 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   constructor(private terms: TermSearch[]) { }
 
   getTreeItem(element: SeekTreeItem): SeekTreeItem {
+    element.contextValue = 'seekTreeItem' // Add context value for context menu
     return element
   }
 
@@ -45,7 +47,7 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
     if (!element) return this.terms.map((term) => new SeekTreeItem(term.text, term.kids, term.totalSize))
     else {
       if (!element.kids) return []
-      return element.kids.map((kid, index) => new SeekTreeItem(kid.name, kid.kids, kid.size, index))
+      return element.kids.map((kid, index) => new SeekTreeItem(kid.name, kid.kids, kid.size, index, kid.path))
     }
   }
 
@@ -67,6 +69,12 @@ export function registerTreeDataProvider(terms: TermSearch[]): SeekTreeDataProvi
   commands.registerCommand('seekdf.toggleIndexAndCount', () => {
     showIndexAndCount = !showIndexAndCount
     treeDataProvider.refresh() // Refresh the tree view
+  })
+
+  // Register the reveal in file explorer command
+  commands.registerCommand('seekdf.revealInFileExplorer', (item: SeekTreeItem) => {
+    const uri = Uri.file(item.kids ? item.kids[0].path : item.path)
+    commands.executeCommand('revealFileInOS', uri)
   })
 
   return treeDataProvider

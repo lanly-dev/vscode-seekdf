@@ -26,6 +26,10 @@
       {
         "command": "seekdf.toggleIndexAndCount",
         "title": "Toggle Index and Count"
+      },
+      {
+        "command": "seekdf.revealInFileExplorer",
+        "title": "Reveal in File Explorer"
       }
     ],
     "views": {
@@ -40,6 +44,13 @@
       "view/title": [
         {
           "command": "seekdf.toggleIndexAndCount",
+          "when": "view == seekdfTreeView",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "seekdf.revealInFileExplorer",
           "when": "view == seekdfTreeView",
           "group": "navigation"
         }
