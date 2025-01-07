@@ -6,16 +6,17 @@ class SeekTreeItem extends TreeItem {
   constructor(
     text: string,
     public readonly kids: TargetInfo[] | null,
+    public readonly size: number,
     public readonly index?: number
   ) {
     const i = index !== undefined ? index + 1 + '. ' : ''
     const count = kids ? `(${kids?.length})` : ''
     const cState = kids ? Expanded : None
-    super(`${i}${text} ${count}`, cState)
+    super(`${i}${text} ${count} - ${size}`, cState)
   }
 }
 
-class TermTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
+class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   private _onDidChangeTreeData: EventEmitter<void> = new EventEmitter<void>()
   readonly onDidChangeTreeData: Event<void> = this._onDidChangeTreeData.event
 
@@ -27,22 +28,21 @@ class TermTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   }
 
   getChildren(element?: SeekTreeItem): SeekTreeItem[] {
-    if (!element) return this.terms.map((term, index) => new SeekTreeItem(term.text, term.kids))
+    if (!element) return this.terms.map((term, index) => new SeekTreeItem(term.text, term.kids, 0))
     else {
       if (!element.kids) return []
-      return element.kids.map((kid, index) => new SeekTreeItem(kid.name, kid.kids, index))
+      return element.kids.map((kid, index) => new SeekTreeItem(kid.name, kid.kids, kid.size, index))
     }
   }
 
   addTerm(term: TermSearch): void {
-    console.log(term)
     this.terms.push(term)
     this._onDidChangeTreeData.fire()
   }
 }
 
-export function registerTreeDataProvider(terms: TermSearch[]): TermTreeDataProvider {
-  const treeDataProvider = new TermTreeDataProvider(terms)
+export function registerTreeDataProvider(terms: TermSearch[]): SeekTreeDataProvider {
+  const treeDataProvider = new SeekTreeDataProvider(terms)
   window.registerTreeDataProvider('seekdfTreeView', treeDataProvider)
   return treeDataProvider
 }

@@ -7,6 +7,7 @@ const { DIR, FILE } = TargetType
 export function activate(context: ExtensionContext) {
   const rc = commands.registerCommand
   const treeDataProvider = registerTreeDataProvider([])
+  // No need to window.createTreeView ?
 
   context.subscriptions.push(
     rc('seekdf.seekDirs', async () => {
