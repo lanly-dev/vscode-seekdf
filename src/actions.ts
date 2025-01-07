@@ -28,9 +28,10 @@ export async function seekDirs(thePath: string, targetName: string): Promise<Tar
   const items = fs.readdirSync(thePath, { withFileTypes: true })
 
   for (const item of items) {
+    if (item.isFile()) continue
     const itemPath = path.join(thePath, item.name)
 
-    if (item.isDirectory() && item.name === targetName) {
+    if (item.name === targetName) {
       foundFolders.push({
         type: DIR,
         path: itemPath,
@@ -47,7 +48,6 @@ export async function seekDirs(thePath: string, targetName: string): Promise<Tar
 }
 
 export async function seekFiles(thePath: string, targetName: string): Promise<TargetInfo[]> {
-
   let foundFiles: TargetInfo[] = []
   const items = fs.readdirSync(thePath, { withFileTypes: true })
 
