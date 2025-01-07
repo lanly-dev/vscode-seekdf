@@ -78,7 +78,7 @@ export async function seekFiles(thePath: string, targetName: string): Promise<Ta
   return foundFiles ? foundFiles : null
 }
 
-export async function seek(targetName: string, type: TargetType): Promise<TargetInfo[]> {
+export async function seek(targetName: string, type: TargetType): Promise<TargetInfo[] | null> {
   const workspacePath = getCurrentWorkspacePath()
   const fn = type === DIR ? seekDirs : seekFiles
   return fn(workspacePath, targetName)

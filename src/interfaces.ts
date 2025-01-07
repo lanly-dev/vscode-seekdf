@@ -14,6 +14,6 @@ export interface TargetInfo {
 }
 
 export interface TermSearch {
-  kids: TargetInfo[]
   text: string
+  kids: TargetInfo[] | null
 }

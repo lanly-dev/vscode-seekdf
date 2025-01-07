@@ -2,7 +2,7 @@ import { TreeDataProvider, TreeItem, TreeItemCollapsibleState as CoState, window
 import { TargetInfo, TermSearch } from './interfaces'
 const { Expanded, None } = CoState
 
-class TermTreeItem extends TreeItem {
+class SeekTreeItem extends TreeItem {
   constructor(
     text: string,
     public readonly kids: TargetInfo[] | null,
@@ -15,22 +15,22 @@ class TermTreeItem extends TreeItem {
   }
 }
 
-class TermTreeDataProvider implements TreeDataProvider<TermTreeItem> {
+class TermTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   private _onDidChangeTreeData: EventEmitter<void> = new EventEmitter<void>()
   readonly onDidChangeTreeData: Event<void> = this._onDidChangeTreeData.event
 
   constructor(private terms: TermSearch[]) { }
 
-  getTreeItem(element: TermTreeItem): TermTreeItem {
+  getTreeItem(element: SeekTreeItem): SeekTreeItem {
     console.debug(element)
     return element
   }
 
-  getChildren(element?: TermTreeItem): TermTreeItem[] {
-    if (!element) return this.terms.map((term, index) => new TermTreeItem(term.text, term.kids))
+  getChildren(element?: SeekTreeItem): SeekTreeItem[] {
+    if (!element) return this.terms.map((term, index) => new SeekTreeItem(term.text, term.kids))
     else {
       if (!element.kids) return []
-      return element.kids.map((kid, index) => new TermTreeItem(kid.name, kid.kids, index))
+      return element.kids.map((kid, index) => new SeekTreeItem(kid.name, kid.kids, index))
     }
   }
 
