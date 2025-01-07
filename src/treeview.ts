@@ -4,12 +4,14 @@ const { Expanded, None } = CoState
 
 class TermTreeItem extends TreeItem {
   constructor(
-    public readonly text: string,
-    public readonly collapsibleState: CoState,
-    public readonly index: number,
-    public readonly kids: TargetInfo[] | null
+    text: string,
+    public readonly kids: TargetInfo[] | null,
+    public readonly index?: number
   ) {
-    super(`${index + 1}. ${text} (Total: ${kids?.length})`, collapsibleState)
+    const i = index !== undefined ? index + 1 + '. ' : ''
+    const count = kids ? `(${kids?.length})` : ''
+    const cState = kids ? Expanded : None
+    super(`${i}${text} ${count}`, cState)
   }
 }
 
@@ -25,14 +27,11 @@ class TermTreeDataProvider implements TreeDataProvider<TermTreeItem> {
   }
 
   getChildren(element?: TermTreeItem): TermTreeItem[] {
-    if (!element) return this.terms.map((term, index) => new TermTreeItem(term.text, Expanded, index, term.kids))
+    if (!element) return this.terms.map((term, index) => new TermTreeItem(term.text, term.kids))
     else {
       if (!element.kids) return []
-      return element.kids?.map((kid, index) =>
-        new TermTreeItem(kid.path, kid.kids?.length ? Expanded : None, index, kid.kids))
-
+      return element.kids.map((kid, index) => new TermTreeItem(kid.name, kid.kids, index))
     }
-    return []
   }
 
   addTerm(term: TermSearch): void {

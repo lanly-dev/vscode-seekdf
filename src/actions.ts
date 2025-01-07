@@ -23,7 +23,7 @@ function getDirSize(folderPath: string): number {
   return totalSize
 }
 
-export async function seekDirs(thePath: string, targetName: string): Promise<TargetInfo[]> {
+export async function seekDirs(thePath: string, targetName: string): Promise<TargetInfo[] | null> {
   let foundFolders: TargetInfo[] = []
   const items = fs.readdirSync(thePath, { withFileTypes: true })
 
@@ -33,23 +33,25 @@ export async function seekDirs(thePath: string, targetName: string): Promise<Tar
 
     if (item.name === targetName) {
       const subFolders = await seekDirs(itemPath, targetName)
+      const parentName = path.basename(thePath)
       foundFolders.push({
         type: DIR,
+        name: path.join(parentName,item.name),
         path: itemPath,
         size: getDirSize(itemPath),
         parent: thePath,
-        parentName: path.basename(thePath),
-        kids: subFolders
+        parentName,
+        kids: subFolders?.length ? subFolders : null
       })
     } else {
       const subFolders = await seekDirs(itemPath, targetName)
-      foundFolders = foundFolders.concat(subFolders)
+      if (subFolders) foundFolders = foundFolders.concat(subFolders)
     }
   }
-  return foundFolders
+  return foundFolders.length ? foundFolders : null
 }
 
-export async function seekFiles(thePath: string, targetName: string): Promise<TargetInfo[]> {
+export async function seekFiles(thePath: string, targetName: string): Promise<TargetInfo[] | null> {
   let foundFiles: TargetInfo[] = []
   const items = fs.readdirSync(thePath, { withFileTypes: true })
 
@@ -58,20 +60,22 @@ export async function seekFiles(thePath: string, targetName: string): Promise<Ta
 
     if (item.isFile() && item.name === targetName) {
       const stats = fs.statSync(itemPath)
+      const parentName = path.basename(thePath)
       foundFiles.push({
         type: FILE,
+        name: path.join(parentName,item.name),
         path: itemPath,
         size: stats.size,
         parent: thePath,
-        parentName: path.basename(thePath),
+        parentName,
         kids: null
       })
     } else if (item.isDirectory()) {
       const subFiles = await seekFiles(itemPath, targetName)
-      foundFiles = foundFiles.concat(subFiles)
+      if (subFiles) foundFiles.concat(subFiles)
     }
   }
-  return foundFiles
+  return foundFiles ? foundFiles : null
 }
 
 export async function seek(targetName: string, type: TargetType): Promise<TargetInfo[]> {
