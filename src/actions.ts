@@ -71,10 +71,10 @@ export async function seekFiles(thePath: string, targetName: string): Promise<Ta
       })
     } else if (item.isDirectory()) {
       const subFiles = await seekFiles(itemPath, targetName)
-      if (subFiles) foundFiles.concat(subFiles)
+      if (subFiles) foundFiles = foundFiles.concat(subFiles)
     }
   }
-  return foundFiles ? foundFiles : null
+  return foundFiles.length ? foundFiles : null
 }
 
 export async function seek(targetName: string, type: TargetType): Promise<TermSearch> {
