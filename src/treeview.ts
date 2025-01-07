@@ -1,40 +1,15 @@
-import { TreeDataProvider, TreeItem, TreeItemCollapsibleState, window, EventEmitter, Event } from 'vscode'
-import { TargetInfo, TermSearch } from './interfaces'
-
-class FolderTreeItem extends TreeItem {
-  constructor(public readonly label: string, public readonly parentName: string, index: number, totalCount: number) {
-    super(`${index + 1}. ${label} (Parent: ${parentName}, Total: ${totalCount})`, TreeItemCollapsibleState.None)
-  }
-}
-
-class FolderTreeDataProvider implements TreeDataProvider<FolderTreeItem> {
-  private _onDidChangeTreeData: EventEmitter<FolderTreeItem | undefined | void> =
-    new EventEmitter<FolderTreeItem | undefined | void>()
-  readonly onDidChangeTreeData: Event<FolderTreeItem | undefined | void> = this._onDidChangeTreeData.event
-
-  constructor(private folders: TargetInfo[]) { }
-
-  getTreeItem(element: FolderTreeItem): TreeItem {
-    return element
-  }
-
-  getChildren(): FolderTreeItem[] {
-    if (this.folders.length === 0) return [new FolderTreeItem('Welcome to seekdf.', '', 0, 0)]
-
-    return this.folders.map((folder, index) =>
-      new FolderTreeItem(folder.path, folder.parentName || '', index, this.folders.length))
-  }
-
-  refresh(folders: TargetInfo[]): void {
-    this.folders = folders
-    this._onDidChangeTreeData.fire()
-  }
-}
+import { TreeDataProvider, TreeItem, TreeItemCollapsibleState as CoState, window, EventEmitter, Event } from 'vscode'
+import { TermSearch } from './interfaces'
+const { Expanded, None } = CoState
 
 class TermTreeItem extends TreeItem {
-  constructor(public readonly label: string, public readonly collapsibleState: TreeItemCollapsibleState, index: number,
+  constructor(public readonly label: string, public readonly collapsibleState: CoState, index: number,
     totalCount: number) {
-    super(`${index + 1}. ${label} (Total: ${totalCount})`, collapsibleState)
+    console.debug(`TermTreeItem: ${label}, ${collapsibleState}, ${index}, ${totalCount}`)
+    // super(`${index + 1}. ${label} (Total: ${totalCount})`, collapsibleState)
+    // const text = `${label} (Total: ${totalCount})`
+    const text = 'how are you'
+    super(text, collapsibleState)
   }
 }
 
@@ -52,12 +27,12 @@ class TermTreeDataProvider implements TreeDataProvider<TermTreeItem> {
   getChildren(element?: TermTreeItem): TermTreeItem[] {
     if (!element) {
       return this.terms.map((term, index) =>
-        new TermTreeItem(term.text, TreeItemCollapsibleState.Collapsed, index, this.terms.length))
+        new TermTreeItem(term.text, Expanded, index, this.terms.length))
     } else {
       const term = this.terms.find(t => t.text === element.label)
       if (term) {
         return term.kids.map((kid, index) =>
-          new TermTreeItem(kid.path, TreeItemCollapsibleState.None, index, term.kids.length))
+          new TermTreeItem(kid.path, None, index, term.kids.length))
       }
     }
     return []
