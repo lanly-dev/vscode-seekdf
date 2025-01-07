@@ -1,6 +1,15 @@
-import { TreeDataProvider, TreeItem, TreeItemCollapsibleState as CoState, window, EventEmitter, Event } from 'vscode'
+import { TreeDataProvider, TreeItem, window, EventEmitter, Event, commands } from 'vscode'
 import { TargetInfo, TermSearch } from './interfaces'
-const { Collapsed,Expanded, None } = CoState
+import { TreeItemCollapsibleState as CoState } from 'vscode'
+
+let prettyBytes: any
+import('pretty-bytes').then(module => {
+  prettyBytes = module.default
+}) // Import pretty-bytes dynamically
+
+const { Collapsed, Expanded, None } = CoState
+
+let showIndexAndCount = true // Add a global variable to track the toggle state
 
 class SeekTreeItem extends TreeItem {
   constructor(
@@ -16,7 +25,9 @@ class SeekTreeItem extends TreeItem {
       if (kids) cState = Collapsed
     } else if (kids) cState = Expanded
     const count = kids ? `(${kids?.length})` : ''
-    super(`${i}${text} ${count} - ${size}`, cState)
+    const humanReadableSize = prettyBytes(size)
+    const label = showIndexAndCount ? `${i}${text} ${count} - ${humanReadableSize}` : text
+    super(label, cState)
   }
 }
 
@@ -42,10 +53,21 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
     this.terms.push(term)
     this._onDidChangeTreeData.fire()
   }
+
+  refresh(): void {
+    this._onDidChangeTreeData.fire()
+  }
 }
 
 export function registerTreeDataProvider(terms: TermSearch[]): SeekTreeDataProvider {
   const treeDataProvider = new SeekTreeDataProvider(terms)
   window.registerTreeDataProvider('seekdfTreeView', treeDataProvider)
+
+  // Register the toggle command
+  commands.registerCommand('seekdf.toggleIndexAndCount', () => {
+    showIndexAndCount = !showIndexAndCount
+    treeDataProvider.refresh() // Refresh the tree view
+  })
+
   return treeDataProvider
 }
