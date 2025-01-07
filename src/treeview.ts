@@ -3,13 +3,13 @@ import { TermSearch } from './interfaces'
 const { Expanded, None } = CoState
 
 class TermTreeItem extends TreeItem {
-  constructor(public readonly label: string, public readonly collapsibleState: CoState, index: number,
-    totalCount: number) {
-    console.debug(`TermTreeItem: ${label}, ${collapsibleState}, ${index}, ${totalCount}`)
-    // super(`${index + 1}. ${label} (Total: ${totalCount})`, collapsibleState)
-    // const text = `${label} (Total: ${totalCount})`
-    const text = 'how are you'
-    super(text, collapsibleState)
+  constructor(
+    public readonly text: string,
+    public readonly collapsibleState: CoState,
+    public readonly index: number,
+    public readonly totalCount: number
+  ) {
+    super(`${index + 1}. ${text} (Total: ${totalCount})`, collapsibleState)
   }
 }
 
@@ -20,7 +20,8 @@ class TermTreeDataProvider implements TreeDataProvider<TermTreeItem> {
 
   constructor(private terms: TermSearch[]) { }
 
-  getTreeItem(element: TermTreeItem): TreeItem {
+  getTreeItem(element: TermTreeItem): TermTreeItem {
+    console.debug(element)
     return element
   }
 
@@ -29,7 +30,7 @@ class TermTreeDataProvider implements TreeDataProvider<TermTreeItem> {
       return this.terms.map((term, index) =>
         new TermTreeItem(term.text, Expanded, index, this.terms.length))
     } else {
-      const term = this.terms.find(t => t.text === element.label)
+      const term = this.terms.find(t => t.text === element.text)
       if (term) {
         return term.kids.map((kid, index) =>
           new TermTreeItem(kid.path, None, index, term.kids.length))
@@ -38,8 +39,8 @@ class TermTreeDataProvider implements TreeDataProvider<TermTreeItem> {
     return []
   }
 
-  refresh(terms: TermSearch[]): void {
-    this.terms = terms
+  addTerm(term: TermSearch): void {
+    this.terms.push(term)
     this._onDidChangeTreeData.fire()
   }
 }

@@ -12,15 +12,15 @@ export function activate(context: ExtensionContext) {
     rc('seekdf.seekDirs', async () => {
       const targetName = await window.showInputBox({ prompt: 'Enter the target directory name' })
       if (targetName) {
-        const folders = await seek(targetName, DIR)
-        treeDataProvider.refresh([{ text: targetName, kids: folders }])
+        const dirs = await seek(targetName, DIR)
+        treeDataProvider.addTerm({ text: targetName, kids: dirs })
       }
     }),
     rc('seekdf.seekFiles', async () => {
       const targetName = await window.showInputBox({ prompt: 'Enter the target files name' })
       if (targetName) {
         const files = await seek(targetName, FILE)
-        treeDataProvider.refresh([{ text: targetName, kids: files }])
+        treeDataProvider.addTerm({ text: targetName, kids: files })
       }
     })
   )
