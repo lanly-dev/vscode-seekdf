@@ -15,9 +15,8 @@ let showIndexAndCount = true // Add a global variable to track the toggle state
 
 class SeekTreeItem extends TreeItem {
   constructor(
-    text: string,
-    // Need this to be public?
-    public readonly size: number,
+    public readonly text: string,
+    public readonly size: number, // Need this to be public?
     public readonly type: TargetType | null,
     public readonly kids?: TargetInfo[] | null,
     public readonly index?: number,
@@ -66,6 +65,10 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   }
 
   addTerm(term: TermSearch): void {
+    if (this.terms.find((t) => t.text === term.text)) {
+      window.showInformationMessage(`Term "${term.text}" already on the list.`)
+      return
+    }
     this.terms.push(term)
     this._onDidChangeTreeData.fire()
   }
@@ -96,8 +99,11 @@ export function registerTreeDataProvider(context: ExtensionContext, terms: TermS
       commands.executeCommand('revealFileInOS', uri)
     }),
     rc('seekdf.removeTerm', (item: SeekTreeItem) => {
-      const term = terms.find(term => term.text === item.label)
-      if (term) treeDataProvider.removeTerm(term)
+      const term = terms.find(term => term.text === item.text)
+      if (term) {
+        treeDataProvider.removeTerm(term)
+        treeDataProvider.refresh()
+      }
     })
   )
 

@@ -25,11 +25,17 @@
       },
       {
         "command": "seekdf.toggleIndexAndCount",
-        "title": "Toggle Index and Count"
+        "title": "Toggle Index and Count",
+        "icon": "$(sync)"
       },
       {
         "command": "seekdf.revealInFileExplorer",
         "title": "Reveal in File Explorer"
+      },
+      {
+        "command": "seekdf.removeTerm",
+        "title": "Remove term from the list",
+        "icon": "$(remove)"
       }
     ],
     "views": {
@@ -63,6 +69,16 @@
         {
           "command": "seekdf.revealInFileExplorer",
           "when": "view == seekdfTreeView && viewItem == resultTreeItem",
+          "group": "navigation"
+        },
+        {
+          "command": "seekdf.removeTerm",
+          "when": "view == seekdfTreeView && viewItem == termTreeItem",
+          "group": "inline"
+        },
+        {
+          "command": "seekdf.removeTerm",
+          "when": "view == seekdfTreeView && viewItem == termTreeItem",
           "group": "navigation"
         }
       ]
