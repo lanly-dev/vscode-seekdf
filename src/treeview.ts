@@ -1,6 +1,8 @@
-import { TreeDataProvider, TreeItem, window, EventEmitter, Event, commands, Uri, ThemeIcon } from 'vscode'
-import { TargetInfo, TargetType, TermSearch } from './interfaces'
+import { TreeDataProvider, TreeItem, EventEmitter, Event, Uri, ThemeIcon, ExtensionContext } from 'vscode'
 import { TreeItemCollapsibleState as CoState } from 'vscode'
+import { window, commands } from 'vscode'
+
+import { TargetInfo, TargetType, TermSearch } from './interfaces'
 
 let prettyBytes: any
 import('pretty-bytes').then(module => {
@@ -36,6 +38,12 @@ class SeekTreeItem extends TreeItem {
       this.iconPath = new ThemeIcon(type === TargetType.DIR ? 'folder' : 'file')
       this.contextValue = 'termTreeItem'
     }
+    // Add a command to remove the term
+    this.command = {
+      command: 'seekdf.removeTerm',
+      title: 'Remove Term',
+      arguments: [this]
+    }
   }
 }
 
@@ -62,27 +70,36 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
     this._onDidChangeTreeData.fire()
   }
 
+  removeTerm(term: TermSearch): void {
+    this.terms = this.terms.filter((t) => t.text !== term.text)
+    this._onDidChangeTreeData.fire()
+  }
+
   refresh(): void {
     this._onDidChangeTreeData.fire()
   }
 }
 
-export function registerTreeDataProvider(terms: TermSearch[]): SeekTreeDataProvider {
+export function registerTreeDataProvider(context: ExtensionContext, terms: TermSearch[]): SeekTreeDataProvider {
   const treeDataProvider = new SeekTreeDataProvider(terms)
   window.registerTreeDataProvider('seekdfTreeView', treeDataProvider)
+  const rc = commands.registerCommand
 
-  // Register the toggle command
-  commands.registerCommand('seekdf.toggleIndexAndCount', () => {
-    showIndexAndCount = !showIndexAndCount
-    treeDataProvider.refresh() // Refresh the tree view
-  })
-
-  // Register the reveal in file explorer command
-  commands.registerCommand('seekdf.revealInFileExplorer', (item: SeekTreeItem) => {
-    if (!item.path) return
-    const uri = Uri.file(item.path)
-    commands.executeCommand('revealFileInOS', uri)
-  })
+  context.subscriptions.push(
+    rc('seekdf.toggleIndexAndCount', () => {
+      showIndexAndCount = !showIndexAndCount
+      treeDataProvider.refresh()
+    }),
+    rc('seekdf.revealInFileExplorer', (item: SeekTreeItem) => {
+      if (!item.path) return
+      const uri = Uri.file(item.path)
+      commands.executeCommand('revealFileInOS', uri)
+    }),
+    rc('seekdf.removeTerm', (item: SeekTreeItem) => {
+      const term = terms.find(term => term.text === item.label)
+      if (term) treeDataProvider.removeTerm(term)
+    })
+  )
 
   return treeDataProvider
 }

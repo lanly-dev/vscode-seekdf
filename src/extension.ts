@@ -6,7 +6,7 @@ const { DIR, FILE } = TargetType
 
 export function activate(context: ExtensionContext) {
   const rc = commands.registerCommand
-  const treeDataProvider = registerTreeDataProvider([])
+  const treeDataProvider = registerTreeDataProvider(context, [])
   // No need to window.createTreeView ?
 
   context.subscriptions.push(
