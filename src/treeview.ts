@@ -31,7 +31,11 @@ class SeekTreeItem extends TreeItem {
     const humanReadableSize = prettyBytes(size)
     const label = showIndexAndCount ? `${i}${text} ${count} - ${humanReadableSize}` : text
     super(label, cState)
-    if (type) this.iconPath = new ThemeIcon(type === TargetType.DIR ? 'folder' : 'file')
+    this.contextValue = 'resultTreeItem'
+    if (type) {
+      this.iconPath = new ThemeIcon(type === TargetType.DIR ? 'folder' : 'file')
+      this.contextValue = 'termTreeItem'
+    }
   }
 }
 
@@ -42,7 +46,6 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   constructor(private terms: TermSearch[]) { }
 
   getTreeItem(element: SeekTreeItem): SeekTreeItem {
-    element.contextValue = 'seekTreeItem' // Add context value for context menu
     return element
   }
 
