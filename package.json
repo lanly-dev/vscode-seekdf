@@ -17,20 +17,22 @@
     "commands": [
       {
         "command": "seekdf.seekDirs",
-        "title": "Seekdf directories"
+        "title": "Seekdf directories",
+        "icon": "$(folder)"
       },
       {
         "command": "seekdf.seekFiles",
-        "title": "Seekdf Files"
+        "title": "Seekdf Files",
+        "icon": "$(file)"
       },
       {
-        "command": "seekdf.toggleIndexAndCount1",
+        "command": "seekdf.toggleViewDetail1",
         "title": "Toggle Index and Count",
         "icon": "$(eye)"
       },
       {
-        "command": "seekdf.toggleIndexAndCount2",
-        "title": "Toggle Index and Count",
+        "command": "seekdf.toggleViewDetail2",
+        "title": "Toggle view detail",
         "icon": "$(eye-closed)"
       },
       {
@@ -66,11 +68,11 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "seekdf.toggleIndexAndCount1",
+          "command": "seekdf.toggleViewDetail1",
           "when": "false"
         },
         {
-          "command": "seekdf.toggleIndexAndCount2",
+          "command": "seekdf.toggleViewDetail2",
           "when": "false"
         },
         {
@@ -80,13 +82,23 @@
       ],
       "view/title": [
         {
-          "command": "seekdf.toggleIndexAndCount1",
-          "when": "view == seekdfTreeView && config.seekdf.showIndexAndCount == true",
+          "command": "seekdf.toggleViewDetail1",
+          "when": "view == seekdfTreeView && config.seekdf.showDetail == true",
           "group": "navigation"
         },
         {
-          "command": "seekdf.toggleIndexAndCount2",
-          "when": "view == seekdfTreeView && config.seekdf.showIndexAndCount == false",
+          "command": "seekdf.toggleViewDetail2",
+          "when": "view == seekdfTreeView && config.seekdf.showDetail == false",
+          "group": "navigation"
+        },
+        {
+          "command": "seekdf.seekDirs",
+          "when": "view == seekdfTreeView",
+          "group": "navigation"
+        },
+        {
+          "command": "seekdf.seekFiles",
+          "when": "view == seekdfTreeView",
           "group": "navigation"
         }
       ],
@@ -117,7 +129,7 @@
       {
         "title": "seekdf",
         "properties": {
-          "seekdf.showIndexAndCount": {
+          "seekdf.showDetail": {
             "type": "string",
             "default": true,
             "description": "Toggle the view mode"
