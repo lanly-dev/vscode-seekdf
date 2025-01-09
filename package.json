@@ -36,6 +36,11 @@
         "command": "seekdf.removeTerm",
         "title": "Remove term from the list",
         "icon": "$(remove)"
+      },
+      {
+        "command": "seekdf.refreshTerm",
+        "title": "Refresh Term",
+        "icon": "$(refresh)"
       }
     ],
     "views": {
@@ -47,6 +52,12 @@
         }
       ]
     },
+    "viewsWelcome": [
+      {
+        "view": "seekdfTreeView",
+        "contents": "[Seekdf directories $(folder)](command:seekdf.seekDirs)\n[Seekdf files $(file)](command:seekdf.seekFiles)"
+      }
+    ],
     "menus": {
       "commandPalette": [
         {
@@ -80,6 +91,11 @@
           "command": "seekdf.removeTerm",
           "when": "view == seekdfTreeView && viewItem == termTreeItem",
           "group": "navigation"
+        },
+        {
+          "command": "seekdf.refreshTerm",
+          "when": "view == seekdfTreeView && viewItem == termTreeItem",
+          "group": "inline"
         }
       ]
     }

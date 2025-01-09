@@ -3,6 +3,8 @@ import { TreeItemCollapsibleState as CoState } from 'vscode'
 import { window, commands } from 'vscode'
 
 import { TargetInfo, TargetType, TermSearch } from './interfaces'
+import { seek } from './actions'
+const { DIR, FILE } = TargetType
 
 let prettyBytes: any
 import('pretty-bytes').then(module => {
@@ -50,7 +52,10 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   private _onDidChangeTreeData: EventEmitter<void> = new EventEmitter<void>()
   readonly onDidChangeTreeData: Event<void> = this._onDidChangeTreeData.event
 
-  constructor(private terms: TermSearch[]) { }
+  constructor(private terms: TermSearch[]) {
+    this.refresh = this.refresh.bind(this)
+    this.refreshTerm = this.refreshTerm.bind(this) // Bind the method to the instance
+  }
 
   getTreeItem(element: SeekTreeItem): SeekTreeItem {
     return element
@@ -64,22 +69,28 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
     }
   }
 
-  addTerm(term: TermSearch): void {
-    if (this.terms.find((t) => t.text === term.text)) {
-      window.showInformationMessage(`Term "${term.text}" already on the list.`)
+  async addTerm(targetName: string, type: TargetType): Promise<void> {
+    if (this.terms.find((t) => t.text === targetName)) {
+      window.showInformationMessage(`Term "${targetName}" already on the list.`)
       return
     }
-    this.terms.push(term)
+    const newTerm = await seek(targetName, DIR)
+    this.terms.push(newTerm)
     this._onDidChangeTreeData.fire()
   }
 
-  removeTerm(term: TermSearch): void {
-    this.terms = this.terms.filter((t) => t.text !== term.text)
+  removeTerm(item: SeekTreeItem): void {
+    this.terms = this.terms.filter((t) => t.text !== item.text)
     this._onDidChangeTreeData.fire()
   }
 
   refresh(): void {
     this._onDidChangeTreeData.fire()
+  }
+
+  refreshTerm(item: SeekTreeItem): void {
+    this.removeTerm(item)
+    this.addTerm(item.text, item.type!)
   }
 }
 
@@ -89,6 +100,14 @@ export function registerTreeDataProvider(context: ExtensionContext, terms: TermS
   const rc = commands.registerCommand
 
   context.subscriptions.push(
+    rc('seekdf.seekDirs', async () => {
+      const targetName = await window.showInputBox({ prompt: 'Enter the target directory name' })
+      if (targetName) treeDataProvider.addTerm(targetName, DIR)
+    }),
+    rc('seekdf.seekFiles', async () => {
+      const targetName = await window.showInputBox({ prompt: 'Enter the target file name' })
+      if (targetName) treeDataProvider.addTerm(targetName, FILE)
+    }),
     rc('seekdf.toggleIndexAndCount', () => {
       showIndexAndCount = !showIndexAndCount
       treeDataProvider.refresh()
@@ -98,13 +117,8 @@ export function registerTreeDataProvider(context: ExtensionContext, terms: TermS
       const uri = Uri.file(item.path)
       commands.executeCommand('revealFileInOS', uri)
     }),
-    rc('seekdf.removeTerm', (item: SeekTreeItem) => {
-      const term = terms.find(term => term.text === item.text)
-      if (term) {
-        treeDataProvider.removeTerm(term)
-        treeDataProvider.refresh()
-      }
-    })
+    rc('seekdf.removeTerm', treeDataProvider.removeTerm),
+    rc('seekdf.refreshTerm', treeDataProvider.refreshTerm)
   )
 
   return treeDataProvider
