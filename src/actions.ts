@@ -3,6 +3,7 @@ import * as path from 'path'
 import * as vscode from 'vscode'
 import { TargetInfo, TargetType, TermSearch } from './interfaces'
 const { DIR, FILE } = TargetType
+import { exec } from 'child_process'
 
 function getCurrentWorkspacePath(): string {
   const { workspaceFolders } = vscode.workspace
@@ -36,7 +37,7 @@ export async function seekDirs(thePath: string, targetName: string): Promise<Tar
       const parentName = path.basename(thePath)
       foundFolders.push({
         type: DIR,
-        name: path.join(parentName,item.name),
+        name: path.join(parentName, item.name),
         term: targetName,
         path: itemPath,
         size: getDirSize(itemPath),
@@ -64,7 +65,7 @@ export async function seekFiles(thePath: string, targetName: string): Promise<Ta
       const parentName = path.basename(thePath)
       foundFiles.push({
         type: FILE,
-        name: path.join(parentName,item.name),
+        name: path.join(parentName, item.name),
         term: targetName,
         path: itemPath,
         size: stats.size,
@@ -95,4 +96,21 @@ export async function seek(targetName: string, type: TargetType): Promise<TermSe
     calculateTotalSize(kids)
   }
   return { text: targetName, kids, totalSize, type }
+}
+
+export function moveToTrash(filePath: string): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    const command = [
+      'powershell.exe -Command',
+      `"$shell = New-Object -ComObject 'Shell.Application';`,
+      '$recycleBin = $shell.Namespace(10);',
+      `$recycleBin.MoveHere('${filePath}')"`
+    ].join(' ')
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error moving ${filePath} to trash:`, error)
+        reject(error)
+      } else resolve()
+    })
+  })
 }

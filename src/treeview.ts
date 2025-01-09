@@ -3,15 +3,12 @@ import { TreeItemCollapsibleState as CoState } from 'vscode'
 import { window, commands } from 'vscode'
 
 import { TargetInfo, TargetType, TermSearch } from './interfaces'
-import { seek } from './actions'
+import { seek, moveToTrash } from './actions'
 const { DIR, FILE } = TargetType
 
 // Import pretty-bytes dynamically
 let prettyBytes: any
 import('pretty-bytes').then(module => { prettyBytes = module.default })
-let trash: any
-import('trash').then(module => { trash = module.default })
-
 
 const { Collapsed, Expanded, None } = CoState
 
@@ -127,14 +124,13 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
       if (term && term.kids) {
         for (const kid of term.kids) {
           console.log(kid.path)
-          await trash(kid.path)
-          console.log(`Moved ${kid.path} to trash`)
+          await moveToTrash(kid.path)
         }
       }
     } else {
       console.log(item.path)
       // It's a child item, move it to trash
-      await trash(item.path)
+      await moveToTrash(item.path!)
     }
     this.refreshTerm(item)
   }

@@ -25,7 +25,7 @@ export default [{
     curly: ['error', 'multi-or-nest'],
     eqeqeq: 'error',
     indent: ['error', 2],
-    quotes: ['error', 'single'],
+    quotes: ['error', 'single', { allowTemplateLiterals: true }],
     semi: ['error', 'never']
   }
 }]
