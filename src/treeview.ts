@@ -1,4 +1,4 @@
-import { TreeDataProvider, TreeItem, EventEmitter, Event, Uri, ThemeIcon, ExtensionContext } from 'vscode'
+import { TreeDataProvider, TreeItem, EventEmitter, Event, Uri, ThemeIcon, ExtensionContext, workspace } from 'vscode'
 import { TreeItemCollapsibleState as CoState } from 'vscode'
 import { window, commands } from 'vscode'
 
@@ -11,7 +11,7 @@ import('pretty-bytes').then(module => { prettyBytes = module.default }) // Impor
 
 const { Collapsed, Expanded, None } = CoState
 
-let showIndexAndCount = true // Add a global variable to track the toggle state
+let showIndexAndCount = workspace.getConfiguration('seekdf').get('showIndexAndCount', true)
 
 class SeekTreeItem extends TreeItem {
   constructor(
@@ -49,6 +49,7 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
     this.refresh = this.refresh.bind(this)
     this.refreshTerm = this.refreshTerm.bind(this)
     this.removeTerm = this.removeTerm.bind(this)
+    this.toggleIndexAndCount = this.toggleIndexAndCount.bind(this)
   }
 
   getTreeItem(element: SeekTreeItem): SeekTreeItem {
@@ -86,6 +87,10 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
     this.removeTerm(item)
     this.addTerm(item.text, item.type!)
   }
+  toggleIndexAndCount() {
+    showIndexAndCount = !showIndexAndCount
+    workspace.getConfiguration('seekdf').update('showIndexAndCount', showIndexAndCount).then(this.refresh)
+  }
 }
 
 export function registerTreeDataProvider(context: ExtensionContext, terms: TermSearch[]): SeekTreeDataProvider {
@@ -104,10 +109,8 @@ export function registerTreeDataProvider(context: ExtensionContext, terms: TermS
       const targetName = await window.showInputBox({ prompt: 'Enter the target file name' })
       if (targetName) treeDataProvider.addTerm(targetName, FILE)
     }),
-    rc('seekdf.toggleIndexAndCount', () => {
-      showIndexAndCount = !showIndexAndCount
-      treeDataProvider.refresh()
-    }),
+    rc('seekdf.toggleIndexAndCount1', treeDataProvider.toggleIndexAndCount),
+    rc('seekdf.toggleIndexAndCount2', treeDataProvider.toggleIndexAndCount),
     rc('seekdf.revealInFileExplorer', (item: SeekTreeItem) => {
       if (!item.path) return
       const uri = Uri.file(item.path)

@@ -24,9 +24,14 @@
         "title": "Seekdf Files"
       },
       {
-        "command": "seekdf.toggleIndexAndCount",
+        "command": "seekdf.toggleIndexAndCount1",
         "title": "Toggle Index and Count",
-        "icon": "$(sync)"
+        "icon": "$(eye)"
+      },
+      {
+        "command": "seekdf.toggleIndexAndCount2",
+        "title": "Toggle Index and Count",
+        "icon": "$(eye-closed)"
       },
       {
         "command": "seekdf.revealInFileExplorer",
@@ -61,18 +66,27 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "seekdf.toggleIndexAndCount",
+          "command": "seekdf.toggleIndexAndCount1",
           "when": "false"
         },
         {
-          "command": "seekdf.revealInFileExplore",
+          "command": "seekdf.toggleIndexAndCount2",
+          "when": "false"
+        },
+        {
+          "command": "seekdf.revealInFileExplorer",
           "when": "false"
         }
       ],
       "view/title": [
         {
-          "command": "seekdf.toggleIndexAndCount",
-          "when": "view == seekdfTreeView",
+          "command": "seekdf.toggleIndexAndCount1",
+          "when": "view == seekdfTreeView && config.seekdf.showIndexAndCount == true",
+          "group": "navigation"
+        },
+        {
+          "command": "seekdf.toggleIndexAndCount2",
+          "when": "view == seekdfTreeView && config.seekdf.showIndexAndCount == false",
           "group": "navigation"
         }
       ],
@@ -98,7 +112,19 @@
           "group": "inline"
         }
       ]
-    }
+    },
+    "configuration": [
+      {
+        "title": "seekdf",
+        "properties": {
+          "seekdf.showIndexAndCount": {
+            "type": "string",
+            "default": true,
+            "description": "Toggle the view mode"
+          }
+        }
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
