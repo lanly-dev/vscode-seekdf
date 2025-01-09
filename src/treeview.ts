@@ -6,8 +6,9 @@ import { TargetInfo, TargetType, TermSearch } from './interfaces'
 import { seek } from './actions'
 const { DIR, FILE } = TargetType
 
+// Import pretty-bytes dynamically
 let prettyBytes: any
-import('pretty-bytes').then(module => { prettyBytes = module.default }) // Import pretty-bytes dynamically
+import('pretty-bytes').then(module => { prettyBytes = module.default })
 
 const { Collapsed, Expanded, None } = CoState
 
@@ -75,7 +76,8 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   }
 
   async addTerm(targetName: string, type: TargetType): Promise<void> {
-    if (this.terms.find((t) => t.text === targetName)) {
+    const found = this.terms.find((t) => t.text === targetName && t.type === type)
+    if (found) {
       window.showInformationMessage(`Term "${targetName}" already on the list.`)
       return
     }
@@ -85,7 +87,8 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   }
 
   removeTerm(item: SeekTreeItem): void {
-    this.terms = this.terms.filter((t) => t.text !== item.text)
+    this.terms = this.terms.filter((t) => t.text !== item.text || t.type !== item.type)
+    this.updateViewItemCount(this.terms.length)
     this._onDidChangeTreeData.fire()
   }
 
