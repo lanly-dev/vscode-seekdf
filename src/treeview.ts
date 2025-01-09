@@ -7,9 +7,7 @@ import { seek } from './actions'
 const { DIR, FILE } = TargetType
 
 let prettyBytes: any
-import('pretty-bytes').then(module => {
-  prettyBytes = module.default
-}) // Import pretty-bytes dynamically
+import('pretty-bytes').then(module => { prettyBytes = module.default }) // Import pretty-bytes dynamically
 
 const { Collapsed, Expanded, None } = CoState
 
@@ -39,12 +37,6 @@ class SeekTreeItem extends TreeItem {
       this.iconPath = new ThemeIcon(type === TargetType.DIR ? 'folder' : 'file')
       this.contextValue = 'termTreeItem'
     }
-    // Add a command to remove the term
-    this.command = {
-      command: 'seekdf.removeTerm',
-      title: 'Remove Term',
-      arguments: [this]
-    }
   }
 }
 
@@ -53,8 +45,10 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   readonly onDidChangeTreeData: Event<void> = this._onDidChangeTreeData.event
 
   constructor(private terms: TermSearch[]) {
+    // Bind the method to the instance
     this.refresh = this.refresh.bind(this)
-    this.refreshTerm = this.refreshTerm.bind(this) // Bind the method to the instance
+    this.refreshTerm = this.refreshTerm.bind(this)
+    this.removeTerm = this.removeTerm.bind(this)
   }
 
   getTreeItem(element: SeekTreeItem): SeekTreeItem {
@@ -74,7 +68,7 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
       window.showInformationMessage(`Term "${targetName}" already on the list.`)
       return
     }
-    const newTerm = await seek(targetName, DIR)
+    const newTerm = await seek(targetName, type)
     this.terms.push(newTerm)
     this._onDidChangeTreeData.fire()
   }
@@ -100,6 +94,8 @@ export function registerTreeDataProvider(context: ExtensionContext, terms: TermS
   const rc = commands.registerCommand
 
   context.subscriptions.push(
+    rc('seekdf.removeTerm', treeDataProvider.removeTerm),
+    rc('seekdf.refreshTerm', treeDataProvider.refreshTerm),
     rc('seekdf.seekDirs', async () => {
       const targetName = await window.showInputBox({ prompt: 'Enter the target directory name' })
       if (targetName) treeDataProvider.addTerm(targetName, DIR)
@@ -116,9 +112,7 @@ export function registerTreeDataProvider(context: ExtensionContext, terms: TermS
       if (!item.path) return
       const uri = Uri.file(item.path)
       commands.executeCommand('revealFileInOS', uri)
-    }),
-    rc('seekdf.removeTerm', treeDataProvider.removeTerm),
-    rc('seekdf.refreshTerm', treeDataProvider.refreshTerm)
+    })
   )
 
   return treeDataProvider
