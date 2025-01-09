@@ -50,6 +50,7 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
     this.refreshTerm = this.refreshTerm.bind(this)
     this.removeTerm = this.removeTerm.bind(this)
     this.toggleViewDetail = this.toggleViewDetail.bind(this)
+    this.updateViewItemCount()
   }
 
   getTreeItem(element: SeekTreeItem): SeekTreeItem {
@@ -57,11 +58,20 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   }
 
   getChildren(element?: SeekTreeItem): SeekTreeItem[] {
-    if (!element) return this.terms.map((term) => new SeekTreeItem(term.text, term.totalSize, term.type, term.kids))
-    else {
+    let children: SeekTreeItem[] = []
+    if (!element) {
+      if (this.terms.length === 0) return []
+      children = this.terms.map((term) => new SeekTreeItem(term.text, term.totalSize, term.type, term.kids))
+    } else {
       if (!element.kids) return []
-      return element.kids.map((kid, index) => new SeekTreeItem(kid.name, kid.size, null, kid.kids, index, kid.path))
+      children = element.kids.map((kid, index) => new SeekTreeItem(kid.name, kid.size, null, kid.kids, index, kid.path))
     }
+    this.updateViewItemCount(children.length)
+    return children
+  }
+
+  private updateViewItemCount(count: number = 0) {
+    commands.executeCommand('setContext', 'viewItemCount', count)
   }
 
   async addTerm(targetName: string, type: TargetType): Promise<void> {
@@ -81,6 +91,7 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
 
   refresh(): void {
     this._onDidChangeTreeData.fire()
+    this.updateViewItemCount(this.terms.length)
   }
 
   refreshTerm(item: SeekTreeItem): void {

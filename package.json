@@ -83,22 +83,22 @@
       "view/title": [
         {
           "command": "seekdf.toggleViewDetail1",
-          "when": "view == seekdfTreeView && config.seekdf.showDetail == true",
+          "when": "view == seekdfTreeView && config.seekdf.showDetail == true && viewItemCount > 0",
           "group": "navigation"
         },
         {
           "command": "seekdf.toggleViewDetail2",
-          "when": "view == seekdfTreeView && config.seekdf.showDetail == false",
+          "when": "view == seekdfTreeView && config.seekdf.showDetail == false && viewItemCount > 0",
           "group": "navigation"
         },
         {
           "command": "seekdf.seekDirs",
-          "when": "view == seekdfTreeView",
+          "when": "view == seekdfTreeView && viewItemCount > 0",
           "group": "navigation"
         },
         {
           "command": "seekdf.seekFiles",
-          "when": "view == seekdfTreeView",
+          "when": "view == seekdfTreeView && viewItemCount > 0",
           "group": "navigation"
         }
       ],
