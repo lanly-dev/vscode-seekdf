@@ -9,6 +9,9 @@ const { DIR, FILE } = TargetType
 // Import pretty-bytes dynamically
 let prettyBytes: any
 import('pretty-bytes').then(module => { prettyBytes = module.default })
+let trash: any
+import('trash').then(module => { trash = module.default })
+
 
 const { Collapsed, Expanded, None } = CoState
 
@@ -19,6 +22,7 @@ class SeekTreeItem extends TreeItem {
     public readonly text: string,
     public readonly size: number, // Need this to be public?
     public readonly type: TargetType | null,
+    public readonly term: string,
     public readonly kids?: TargetInfo[] | null,
     public readonly index?: number,
     public readonly path?: string
@@ -37,7 +41,7 @@ class SeekTreeItem extends TreeItem {
     if (type) {
       this.iconPath = new ThemeIcon(type === TargetType.DIR ? 'folder' : 'file')
       this.contextValue = 'termTreeItem'
-    }
+    } else this.tooltip = path
   }
 }
 
@@ -61,11 +65,13 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   getChildren(element?: SeekTreeItem): SeekTreeItem[] {
     let children: SeekTreeItem[] = []
     if (!element) {
+      // These are term items
       if (this.terms.length === 0) return []
-      children = this.terms.map((term) => new SeekTreeItem(term.text, term.totalSize, term.type, term.kids))
+      children = this.terms.map((term) => new SeekTreeItem(term.text, term.totalSize, term.type, term.text, term.kids))
     } else {
       if (!element.kids) return []
-      children = element.kids.map((kid, index) => new SeekTreeItem(kid.name, kid.size, null, kid.kids, index, kid.path))
+      children = element.kids.map(
+        (kid, index) => new SeekTreeItem(kid.name, kid.size, null, kid.term, kid.kids, index, kid.path))
     }
     this.updateViewItemCount(children.length)
     return children
@@ -98,12 +104,39 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   }
 
   refreshTerm(item: SeekTreeItem): void {
+    console.log('Refreshing term', item)
     this.removeTerm(item)
-    this.addTerm(item.text, item.type!)
+    this.addTerm(item.term, item.type!)
   }
   toggleViewDetail() {
     showDetail = !showDetail
     workspace.getConfiguration('seekdf').update('showDetail', showDetail).then(this.refresh)
+  }
+
+  async deleteItem(item: SeekTreeItem): Promise<void> {
+    const confirm = await window.showWarningMessage(
+      `Are you sure you want to delete ${item.text}?`,
+      { modal: true },
+      'Yes'
+    )
+    if (confirm !== 'Yes') return
+
+    if (item.type) {
+      // It's a term item, move all items to trash
+      const term = this.terms.find(t => t.text === item.text && t.type === item.type)
+      if (term && term.kids) {
+        for (const kid of term.kids) {
+          console.log(kid.path)
+          await trash(kid.path)
+          console.log(`Moved ${kid.path} to trash`)
+        }
+      }
+    } else {
+      console.log(item.path)
+      // It's a child item, move it to trash
+      await trash(item.path)
+    }
+    this.refreshTerm(item)
   }
 }
 
@@ -129,7 +162,8 @@ export function registerTreeDataProvider(context: ExtensionContext, terms: TermS
       if (!item.path) return
       const uri = Uri.file(item.path)
       commands.executeCommand('revealFileInOS', uri)
-    })
+    }),
+    rc('seekdf.deleteItem', (item: SeekTreeItem) => treeDataProvider.deleteItem(item))
   )
 
   return treeDataProvider

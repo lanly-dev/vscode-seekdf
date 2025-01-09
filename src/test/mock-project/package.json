@@ -1,0 +1,12 @@
+{
+  "name": "mock-project",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "esbuild": "^0.24.2",
+    "eslint": "^9.17.0",
+    "trash": "^9.0.0"
+  }
+}

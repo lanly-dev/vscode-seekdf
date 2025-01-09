@@ -48,6 +48,11 @@
         "command": "seekdf.refreshTerm",
         "title": "Refresh Term",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "seekdf.deleteItem",
+        "title": "Delete",
+        "icon": "$(trash)"
       }
     ],
     "views": {
@@ -67,6 +72,10 @@
     ],
     "menus": {
       "commandPalette": [
+        {
+          "command": "seekdf.deleteItem",
+          "when": "false"
+        },
         {
           "command": "seekdf.toggleViewDetail1",
           "when": "false"
@@ -122,6 +131,11 @@
           "command": "seekdf.refreshTerm",
           "when": "view == seekdfTreeView && viewItem == termTreeItem",
           "group": "inline"
+        },
+        {
+          "command": "seekdf.deleteItem",
+          "when": "view == seekdfTreeView",
+          "group": "navigation"
         }
       ]
     },

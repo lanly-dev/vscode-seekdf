@@ -6,6 +6,7 @@ export enum TargetType {
 export interface TargetInfo {
   type: TargetType
   name: string
+  term: string
   path: string
   size: number
   parent: string | null

@@ -37,6 +37,7 @@ export async function seekDirs(thePath: string, targetName: string): Promise<Tar
       foundFolders.push({
         type: DIR,
         name: path.join(parentName,item.name),
+        term: targetName,
         path: itemPath,
         size: getDirSize(itemPath),
         parent: thePath,
@@ -64,6 +65,7 @@ export async function seekFiles(thePath: string, targetName: string): Promise<Ta
       foundFiles.push({
         type: FILE,
         name: path.join(parentName,item.name),
+        term: targetName,
         path: itemPath,
         size: stats.size,
         parent: thePath,
