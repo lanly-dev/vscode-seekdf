@@ -1,12 +1,15 @@
+import { exec } from 'child_process'
+import { window, workspace } from 'vscode'
 import * as fs from 'fs'
 import * as path from 'path'
-import * as vscode from 'vscode'
+
 import { TargetInfo, TargetType, TermSearch } from './interfaces'
+
 const { DIR, FILE } = TargetType
-import { exec } from 'child_process'
+const channel = window.createOutputChannel('SeekDF')
 
 function getCurrentWorkspacePath(): string {
-  const { workspaceFolders } = vscode.workspace
+  const { workspaceFolders } = workspace
   if (workspaceFolders?.length) return workspaceFolders[0].uri.fsPath
   throw new Error('No workspace folder is open')
 }
@@ -108,9 +111,14 @@ export function moveToTrash(filePath: string): Promise<void> {
     ].join(' ')
     exec(command, (error, stdout, stderr) => {
       if (error) {
-        console.error(`Error moving ${filePath} to trash:`, error)
+        window.showErrorMessage(`Error moving ${filePath} to recycle bin: ${error.message}`)
+        channel.append(`Error moving ${filePath} to recycle bin: ${error.message}❌\n`)
         reject(error)
-      } else resolve()
+      } else {
+        channel.show()
+        channel.append(`Successfully moved ${filePath} to recycle bin✅\n`)
+        resolve()
+      }
     })
   })
 }

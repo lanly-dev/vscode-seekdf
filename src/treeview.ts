@@ -119,8 +119,7 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
     const confirm = await window.showWarningMessage(
       `Are you sure you want to delete ${item.text}?`, { modal: true }, 'Yes')
     if (confirm !== 'Yes') return
-
-    if (item.type) {
+    if (item.index === undefined) {
       // It's a term item, move all items to trash
       const term = this.terms.find(t => t.text === item.text && t.type === item.type)
       if (term && term.kids) {
