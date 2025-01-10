@@ -1,6 +1,6 @@
-import { TreeDataProvider, TreeItem, EventEmitter, Event, Uri, ThemeIcon, ExtensionContext, workspace } from 'vscode'
+import { TreeDataProvider, TreeItem, EventEmitter, Event, Uri, ThemeIcon, ExtensionContext } from 'vscode'
 import { TreeItemCollapsibleState as CoState } from 'vscode'
-import { window, commands } from 'vscode'
+import { commands, window, workspace } from 'vscode'
 import * as os from 'os'
 
 import { TargetInfo, TargetType, TermSearch } from './interfaces'
@@ -36,11 +36,14 @@ class SeekTreeItem extends TreeItem {
     const label = showDetail ? `${i}${text} ${count} - ${humanReadableSize}` : text
 
     super(label, cState)
-    this.contextValue = 'resultTreeItem'
     if (index === undefined) {
       this.iconPath = new ThemeIcon(type === TargetType.DIR ? 'folder' : 'file')
       this.contextValue = 'termTreeItem'
-    } else this.tooltip = path
+      if (cState === None) this.contextValue = 'noKidsTermTreeItem'
+    } else {
+      this.tooltip = path
+      this.contextValue = 'resultTreeItem'
+    }
   }
 }
 
@@ -117,7 +120,7 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
       return
     }
     const confirm = await window.showWarningMessage(
-      `Are you sure you want to delete ${item.text}?`, { modal: true }, 'Yes')
+      `Are you sure you want to move ${item.text} to the Recycle Bin?`, { modal: true }, 'Yes')
     if (confirm !== 'Yes') return
     if (item.index === undefined) {
       // It's a term item, move all items to trash
@@ -138,10 +141,10 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
 
 export function registerTreeDataProvider(context: ExtensionContext, terms: TermSearch[]): SeekTreeDataProvider {
   const treeDataProvider = new SeekTreeDataProvider(terms)
-  window.registerTreeDataProvider('seekdfTreeView', treeDataProvider)
   const rc = commands.registerCommand
 
   context.subscriptions.push(
+    window.registerTreeDataProvider('seekdfTreeView', treeDataProvider),
     rc('seekdf.removeTerm', treeDataProvider.removeTerm),
     rc('seekdf.refreshTerm', treeDataProvider.refreshTerm),
     rc('seekdf.seekDirs', async () => {

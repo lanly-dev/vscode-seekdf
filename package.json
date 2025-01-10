@@ -51,7 +51,7 @@
       },
       {
         "command": "seekdf.deleteItem",
-        "title": "Delete",
+        "title": "Move to recycle bin",
         "icon": "$(trash)"
       }
     ],
@@ -119,22 +119,22 @@
         },
         {
           "command": "seekdf.removeTerm",
-          "when": "view == seekdfTreeView && viewItem == termTreeItem",
+          "when": "view == seekdfTreeView && (viewItem == termTreeItem || viewItem == noKidsTermTreeItem)",
           "group": "inline"
         },
         {
           "command": "seekdf.removeTerm",
-          "when": "view == seekdfTreeView && viewItem == termTreeItem",
+          "when": "view == seekdfTreeView && (viewItem == termTreeItem || viewItem == noKidsTermTreeItem)",
           "group": "navigation"
         },
         {
           "command": "seekdf.refreshTerm",
-          "when": "view == seekdfTreeView && viewItem == termTreeItem",
+          "when": "view == seekdfTreeView && (viewItem == termTreeItem || viewItem == noKidsTermTreeItem)",
           "group": "inline"
         },
         {
           "command": "seekdf.deleteItem",
-          "when": "view == seekdfTreeView",
+          "when": "view == seekdfTreeView && viewItem != noKidsTermTreeItem",
           "group": "navigation"
         }
       ]
