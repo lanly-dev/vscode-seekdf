@@ -9,6 +9,11 @@
   "categories": [
     "Other"
   ],
+  "icon": "media/seekdf.png",
+  "galleryBanner": {
+    "color": "black",
+    "theme": "dark"
+  },
   "activationEvents": [
     "onStartupFinished"
   ],
@@ -60,6 +65,7 @@
         {
           "id": "seekdfTreeView",
           "name": "Seekdf",
+          "icon": "media/seekdf.svg",
           "contextualTitle": "Seekdf"
         }
       ]
