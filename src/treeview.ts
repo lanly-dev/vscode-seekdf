@@ -1,6 +1,7 @@
 import { TreeDataProvider, TreeItem, EventEmitter, Event, Uri, ThemeIcon, ExtensionContext, workspace } from 'vscode'
 import { TreeItemCollapsibleState as CoState } from 'vscode'
 import { window, commands } from 'vscode'
+import * as os from 'os'
 
 import { TargetInfo, TargetType, TermSearch } from './interfaces'
 import { seek, moveToTrash } from './actions'
@@ -18,7 +19,7 @@ class SeekTreeItem extends TreeItem {
   constructor(
     public readonly text: string,
     public readonly size: number, // Need this to be public?
-    public readonly type: TargetType | null,
+    public readonly type: TargetType,
     public readonly term: string,
     public readonly kids?: TargetInfo[] | null,
     public readonly index?: number,
@@ -33,9 +34,10 @@ class SeekTreeItem extends TreeItem {
     const count = kids ? `(${kids?.length})` : ''
     const humanReadableSize = prettyBytes(size)
     const label = showDetail ? `${i}${text} ${count} - ${humanReadableSize}` : text
+
     super(label, cState)
     this.contextValue = 'resultTreeItem'
-    if (type) {
+    if (index === undefined) {
       this.iconPath = new ThemeIcon(type === TargetType.DIR ? 'folder' : 'file')
       this.contextValue = 'termTreeItem'
     } else this.tooltip = path
@@ -68,7 +70,7 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
     } else {
       if (!element.kids) return []
       children = element.kids.map(
-        (kid, index) => new SeekTreeItem(kid.name, kid.size, null, kid.term, kid.kids, index, kid.path))
+        (kid, index) => new SeekTreeItem(kid.name, kid.size, kid.type, kid.term, kid.kids, index, kid.path))
     }
     this.updateViewItemCount(children.length)
     return children
@@ -90,7 +92,7 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   }
 
   removeTerm(item: SeekTreeItem): void {
-    this.terms = this.terms.filter((t) => t.text !== item.text || t.type !== item.type)
+    this.terms = this.terms.filter((t) => t.text !== item.term || t.type !== item.type)
     this.updateViewItemCount(this.terms.length)
     this._onDidChangeTreeData.fire()
   }
@@ -101,9 +103,8 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   }
 
   refreshTerm(item: SeekTreeItem): void {
-    console.log('Refreshing term', item)
     this.removeTerm(item)
-    this.addTerm(item.term, item.type!)
+    this.addTerm(item.term, item.type)
   }
   toggleViewDetail() {
     showDetail = !showDetail
@@ -111,11 +112,12 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   }
 
   async deleteItem(item: SeekTreeItem): Promise<void> {
+    if (os.platform() !== 'win32') {
+      window.showInformationMessage('This action is only supported on Windows.')
+      return
+    }
     const confirm = await window.showWarningMessage(
-      `Are you sure you want to delete ${item.text}?`,
-      { modal: true },
-      'Yes'
-    )
+      `Are you sure you want to delete ${item.text}?`, { modal: true }, 'Yes')
     if (confirm !== 'Yes') return
 
     if (item.type) {
@@ -128,7 +130,6 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
         }
       }
     } else {
-      console.log(item.path)
       // It's a child item, move it to trash
       await moveToTrash(item.path!)
     }
@@ -161,6 +162,5 @@ export function registerTreeDataProvider(context: ExtensionContext, terms: TermS
     }),
     rc('seekdf.deleteItem', (item: SeekTreeItem) => treeDataProvider.deleteItem(item))
   )
-
   return treeDataProvider
 }
