@@ -34,8 +34,8 @@ class SeekTreeItem extends TreeItem {
     const count = kids ? `(${kids?.length})` : ''
     const humanReadableSize = prettyBytes(size)
     const label = showDetail ? `${i}${text} ${count} - ${humanReadableSize}` : text
-
     super(label, cState)
+    this.id = `${term}-${index ?? ''}-${type}` // Keep expansion state
     if (index === undefined) {
       this.iconPath = new ThemeIcon(type === TargetType.DIR ? 'folder' : 'file')
       this.contextValue = 'termTreeItem'
@@ -90,7 +90,7 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
       return
     }
     const newTerm = await seek(targetName, type)
-    this.terms.push(newTerm)
+    this.terms.unshift(newTerm)
     this._onDidChangeTreeData.fire()
   }
 
