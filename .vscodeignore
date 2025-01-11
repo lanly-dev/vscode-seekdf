@@ -1,6 +1,8 @@
+**/*.map
 .gitignore
 .vscode
 .vscode-test
+.vscode-test.mjs
 esbuild.js
 eslint.config.mjs
 media/vscodeignore
