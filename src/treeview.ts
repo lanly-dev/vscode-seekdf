@@ -35,7 +35,6 @@ class SeekTreeItem extends TreeItem {
     const humanReadableSize = prettyBytes(size)
     const label = showDetail ? `${i}${text} ${count} - ${humanReadableSize}` : text
     super(label, cState)
-    this.id = `${term}-${index ?? ''}-${type}` // Keep expansion state
     if (index === undefined) {
       this.iconPath = new ThemeIcon(type === TargetType.DIR ? 'folder' : 'file')
       this.contextValue = 'termTreeItem'
@@ -44,6 +43,7 @@ class SeekTreeItem extends TreeItem {
       this.tooltip = path
       this.contextValue = 'resultTreeItem'
     }
+    this.id = `${term}${index ?? ''}${this.contextValue}${type}${size}` // Keep expansion state
   }
 }
 
