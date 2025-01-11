@@ -7,7 +7,7 @@ My use case: I was looking for a way to hunt down `node_modules` directories in 
 - **Seek Directories**: Search for directories within your workspace.
 - **Seek Files**: Search for files within your workspace.
 
-![Seekdf in action](images/seekdf.png)
+![Seekdf in action](https://raw.githubusercontent.com/lanly-dev/vscode-seekdf/refs/heads/main/media/seekdf-capture.png)
 
 ## Commands
 This extension provides the following commands:

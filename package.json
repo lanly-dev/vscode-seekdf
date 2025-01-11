@@ -9,6 +9,14 @@
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "seekdf",
+    "organize",
+    "file explorer",
+    "file management",
+    "directory",
+    "recycle bin"
+  ],
   "icon": "media/seekdf.png",
   "galleryBanner": {
     "color": "black",
@@ -191,9 +199,10 @@
     "@typescript-eslint/parser": "^8.19.1",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
+    "@vscode/vsce": "^3.2.1",
     "esbuild": "^0.24.2",
-    "eslint": "^9.17.0",
+    "eslint": "^9.18.0",
     "npm-run-all": "^4.1.5",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.3"
   }
 }
