@@ -16,6 +16,7 @@
   "typescript.tsc.autoDetect": "off",
   "cSpell.words": [
     "esbuild",
+    "lanly",
     "seekdf",
     "treeview",
     "vscodeignore"

@@ -1,7 +1,9 @@
 {
   "name": "seekdf",
   "displayName": "seekdf",
-  "description": "placeholder",
+  "description": "Seekdf helps you search and view files and directories sharing the same name within your workspace",
+  "homepage": "https://github.com/lanly-dev/vscode-seekdf",
+  "publisher": "lanly-dev",
   "version": "1.0.0",
   "engines": {
     "vscode": "^1.96.0"
@@ -10,11 +12,13 @@
     "Other"
   ],
   "keywords": [
-    "seekdf",
-    "organize",
+    "Seekdf",
+    "size",
+    "file search",
     "file explorer",
     "file management",
     "directory",
+    "organization",
     "recycle bin"
   ],
   "icon": "media/seekdf.png",
