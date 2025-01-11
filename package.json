@@ -4,7 +4,7 @@
   "description": "Seekdf helps you search and view files and directories sharing the same name within your workspace",
   "homepage": "https://github.com/lanly-dev/vscode-seekdf",
   "publisher": "lanly-dev",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engines": {
     "vscode": "^1.96.0"
   },
