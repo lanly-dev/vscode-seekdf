@@ -90,7 +90,13 @@ export async function seek(targetName: string, type: TargetType): Promise<TermSe
   try {
     kids = await fn(workspacePath, targetName)
   } catch (error) {
-    window.showErrorMessage(`${error.message}`)
+    if (error instanceof Error) {
+      window.showErrorMessage(error.message)
+      channel.append(`${error.message}❌\n`)
+    } else {
+      window.showErrorMessage('An unknown error occurred')
+      channel.append('An unknown error occurred❌\n')
+    }
   }
 
   let totalSize = 0
