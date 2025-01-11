@@ -2,7 +2,7 @@
   "name": "seekdf",
   "displayName": "seekdf",
   "description": "placeholder",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -20,6 +20,25 @@
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
+      {
+        "command": "seekdf.deleteItem",
+        "title": "Move to recycle bin",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "seekdf.refreshTerm",
+        "title": "Refresh Term",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "seekdf.removeTerm",
+        "title": "Remove term from the list",
+        "icon": "$(remove)"
+      },
+      {
+        "command": "seekdf.revealInFileExplorer",
+        "title": "Reveal in File Explorer"
+      },
       {
         "command": "seekdf.seekDirs",
         "title": "Seekdf directories",
@@ -39,25 +58,6 @@
         "command": "seekdf.toggleViewDetail2",
         "title": "Toggle view detail",
         "icon": "$(eye-closed)"
-      },
-      {
-        "command": "seekdf.revealInFileExplorer",
-        "title": "Reveal in File Explorer"
-      },
-      {
-        "command": "seekdf.removeTerm",
-        "title": "Remove term from the list",
-        "icon": "$(remove)"
-      },
-      {
-        "command": "seekdf.refreshTerm",
-        "title": "Refresh Term",
-        "icon": "$(refresh)"
-      },
-      {
-        "command": "seekdf.deleteItem",
-        "title": "Move to recycle bin",
-        "icon": "$(trash)"
       }
     ],
     "views": {
@@ -83,29 +83,27 @@
           "when": "false"
         },
         {
-          "command": "seekdf.toggleViewDetail1",
+          "command": "seekdf.refreshTerm",
           "when": "false"
         },
         {
-          "command": "seekdf.toggleViewDetail2",
+          "command": "seekdf.removeTerm",
           "when": "false"
         },
         {
           "command": "seekdf.revealInFileExplorer",
           "when": "false"
-        }
-      ],
-      "view/title": [
+        },
         {
           "command": "seekdf.toggleViewDetail1",
-          "when": "view == seekdfTreeView && config.seekdf.showDetail == true && viewItemCount > 0",
-          "group": "navigation"
+          "when": "false"
         },
         {
           "command": "seekdf.toggleViewDetail2",
-          "when": "view == seekdfTreeView && config.seekdf.showDetail == false && viewItemCount > 0",
-          "group": "navigation"
-        },
+          "when": "false"
+        }
+      ],
+      "view/title": [
         {
           "command": "seekdf.seekDirs",
           "when": "view == seekdfTreeView && viewItemCount > 0",
@@ -115,22 +113,22 @@
           "command": "seekdf.seekFiles",
           "when": "view == seekdfTreeView && viewItemCount > 0",
           "group": "navigation"
+        },
+        {
+          "command": "seekdf.toggleViewDetail1",
+          "when": "view == seekdfTreeView && config.seekdf.showDetail == true && viewItemCount > 0",
+          "group": "navigation"
+        },
+        {
+          "command": "seekdf.toggleViewDetail2",
+          "when": "view == seekdfTreeView && config.seekdf.showDetail == false && viewItemCount > 0",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
         {
-          "command": "seekdf.revealInFileExplorer",
-          "when": "view == seekdfTreeView && viewItem == resultTreeItem",
-          "group": "navigation"
-        },
-        {
-          "command": "seekdf.removeTerm",
-          "when": "view == seekdfTreeView && (viewItem == termTreeItem || viewItem == noKidsTermTreeItem)",
-          "group": "inline"
-        },
-        {
-          "command": "seekdf.removeTerm",
-          "when": "view == seekdfTreeView && (viewItem == termTreeItem || viewItem == noKidsTermTreeItem)",
+          "command": "seekdf.deleteItem",
+          "when": "view == seekdfTreeView && viewItem != noKidsTermTreeItem",
           "group": "navigation"
         },
         {
@@ -139,8 +137,18 @@
           "group": "inline"
         },
         {
-          "command": "seekdf.deleteItem",
-          "when": "view == seekdfTreeView && viewItem != noKidsTermTreeItem",
+          "command": "seekdf.removeTerm",
+          "when": "view == seekdfTreeView && (viewItem == termTreeItem || viewItem == noKidsTermTreeItem)",
+          "group": "inline"
+        },
+        {
+          "command": "seekdf.removeTerm",
+          "when": "view == seekdfTreeView && (viewItem == termTreeItem || viewItem == noKidsTermTreeItem)",
+          "group": "navigation"
+        },
+        {
+          "command": "seekdf.revealInFileExplorer",
+          "when": "view == seekdfTreeView && viewItem == resultTreeItem",
           "group": "navigation"
         }
       ]
