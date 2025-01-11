@@ -1,5 +1,6 @@
 .vscode-test/
 *.vsix
+*.zip
 dist
 node_modules
 out
