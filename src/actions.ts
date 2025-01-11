@@ -86,7 +86,12 @@ export async function seekFiles(thePath: string, targetName: string): Promise<Ta
 export async function seek(targetName: string, type: TargetType): Promise<TermSearch> {
   const workspacePath = getCurrentWorkspacePath()
   const fn = type === DIR ? seekDirs : seekFiles
-  const kids = await fn(workspacePath, targetName)
+  let kids
+  try {
+    kids = await fn(workspacePath, targetName)
+  } catch (error) {
+    window.showErrorMessage(`${error.message}`)
+  }
 
   let totalSize = 0
   if (kids) {
@@ -98,7 +103,7 @@ export async function seek(targetName: string, type: TargetType): Promise<TermSe
     }
     calculateTotalSize(kids)
   }
-  return { text: targetName, kids, totalSize, type }
+  return { text: targetName, kids: kids ?? null, totalSize, type }
 }
 
 export function moveToTrash(filePath: string): Promise<void> {
