@@ -1,5 +1,5 @@
 import { exec } from 'child_process'
-import { window, workspace } from 'vscode'
+import { window, workspace, ProgressLocation } from 'vscode'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -87,17 +87,25 @@ export async function seek(targetName: string, type: TargetType): Promise<TermSe
   const workspacePath = getCurrentWorkspacePath()
   const fn = type === DIR ? seekDirs : seekFiles
   let kids
-  try {
-    kids = await fn(workspacePath, targetName)
-  } catch (error) {
-    if (error instanceof Error) {
-      window.showErrorMessage(error.message)
-      channel.append(`${error.message}❌\n`)
-    } else {
-      window.showErrorMessage('An unknown error occurred')
-      channel.append('An unknown error occurred❌\n')
-    }
+  const progressOptions = {
+    location: ProgressLocation.Notification,
+    title: `Seeking ${type === DIR ? 'directories' : 'files'} for "${targetName}"...`,
+    cancellable: false
   }
+
+  await window.withProgress(progressOptions, async () => {
+    try {
+      kids = await fn(workspacePath, targetName)
+    } catch (error) {
+      if (error instanceof Error) {
+        window.showErrorMessage(error.message)
+        channel.append(`${error.message}❌\n`)
+      } else {
+        window.showErrorMessage('An unknown error occurred')
+        channel.append('An unknown error occurred❌\n')
+      }
+    }
+  })
 
   let totalSize = 0
   if (kids) {
