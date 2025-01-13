@@ -6,8 +6,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [1.0.2] - 2025-01-13
 - Only minor logo changes
-  <img src='https://raw.githubusercontent.com/lanly-dev/vscode-seekdf/refs/heads/main/media/vscodeignore/seekdf.png' height='50' width='50' title='seekdf'/>
-  <img src='https://github.com/lanly-dev/vscode-seekdf/blob/main/media/seekdf.png?raw=true' height='50' width='50' title='seekdf' style='padding-left:5px'/>
+  <br>
+  <img src='https://raw.githubusercontent.com/lanly-dev/vscode-seekdf/refs/heads/main/media/vscodeignore/seekdf.png' width='50'/>
+  <img src='https://github.com/lanly-dev/vscode-seekdf/blob/main/media/seekdf.png?raw=true' width='50'/>
 - 9 files, 49.57KB, 1.96.0
 
 
