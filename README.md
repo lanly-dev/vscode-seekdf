@@ -19,6 +19,9 @@ This extension provides the following commands:
 
 ## Release Notes
 
+### 1.0.2
+- Only logo changes
+
 ### 1.0.0, 1.0.1
 - Initial release of Seekdf
 
