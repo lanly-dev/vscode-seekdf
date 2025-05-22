@@ -20,5 +20,6 @@
     "seekdf",
     "treeview",
     "vscodeignore"
-  ]
+  ],
+  "terminal.integrated.defaultProfile.windows": "Command Prompt"
 }

@@ -2,14 +2,11 @@ import { TreeDataProvider, TreeItem, EventEmitter, Event, Uri, ThemeIcon, Extens
 import { TreeItemCollapsibleState as CoState } from 'vscode'
 import { commands, window, workspace } from 'vscode'
 import * as os from 'os'
+import pb from 'pretty-bytes'
 
 import { TargetInfo, TargetType, TermSearch } from './interfaces'
 import { seek, moveToTrash } from './actions'
 const { DIR, FILE } = TargetType
-
-// Import pretty-bytes dynamically
-let prettyBytes: any
-import('pretty-bytes').then(module => { prettyBytes = module.default })
 
 const { Collapsed, Expanded, None } = CoState
 
@@ -32,7 +29,7 @@ class SeekTreeItem extends TreeItem {
       if (kids) cState = Collapsed
     } else if (kids) cState = Expanded
     const count = kids ? `(${kids?.length})` : ''
-    const humanReadableSize = prettyBytes(size)
+    const humanReadableSize = pb(size)
     const label = showDetail ? `${i}${text} ${count} - ${humanReadableSize}` : text
     super(label, cState)
     if (index === undefined) {
@@ -51,7 +48,9 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   private _onDidChangeTreeData: EventEmitter<void> = new EventEmitter<void>()
   readonly onDidChangeTreeData: Event<void> = this._onDidChangeTreeData.event
 
-  constructor(private terms: TermSearch[]) {
+  private terms: TermSearch[] = []
+
+  constructor() {
     // Bind the method to the instance
     this.refresh = this.refresh.bind(this)
     this.refreshTerm = this.refreshTerm.bind(this)
@@ -127,7 +126,7 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
       const term = this.terms.find(t => t.text === item.text && t.type === item.type)
       if (term && term.kids) {
         for (const kid of term.kids) {
-          console.log(kid.path)
+          // console.debug(kid.path)
           await moveToTrash(kid.path)
         }
       }
@@ -139,8 +138,8 @@ class SeekTreeDataProvider implements TreeDataProvider<SeekTreeItem> {
   }
 }
 
-export function registerTreeDataProvider(context: ExtensionContext, terms: TermSearch[]): SeekTreeDataProvider {
-  const treeDataProvider = new SeekTreeDataProvider(terms)
+export default function registerTreeDataProvider(context: ExtensionContext) {
+  const treeDataProvider = new SeekTreeDataProvider()
   const rc = commands.registerCommand
 
   context.subscriptions.push(
@@ -148,11 +147,15 @@ export function registerTreeDataProvider(context: ExtensionContext, terms: TermS
     rc('seekdf.removeTerm', treeDataProvider.removeTerm),
     rc('seekdf.refreshTerm', treeDataProvider.refreshTerm),
     rc('seekdf.seekDirs', async () => {
-      const targetName = await window.showInputBox({ prompt: 'Enter the target directory name' })
+      const targetName = await window.showInputBox({
+        title: 'seekdf', prompt: 'Enter the target directory name, it must be exact', placeHolder: 'node_modules'
+      })
       if (targetName) treeDataProvider.addTerm(targetName, DIR)
     }),
     rc('seekdf.seekFiles', async () => {
-      const targetName = await window.showInputBox({ prompt: 'Enter the target file name' })
+      const targetName = await window.showInputBox({
+        title: 'seekdf', prompt: 'Enter the target name, it must be exact', placeHolder: 'package.json'
+      })
       if (targetName) treeDataProvider.addTerm(targetName, FILE)
     }),
     rc('seekdf.toggleViewDetail1', treeDataProvider.toggleViewDetail),
@@ -164,5 +167,4 @@ export function registerTreeDataProvider(context: ExtensionContext, terms: TermS
     }),
     rc('seekdf.deleteItem', (item: SeekTreeItem) => treeDataProvider.deleteItem(item))
   )
-  return treeDataProvider
 }
