@@ -7,7 +7,7 @@ I was looking for a way to locate and delete node_modules directories to free up
 - **Seek Directories**: Search for directories within your workspace
 - **Seek Files**: Search for files within your workspace
 
-![Seekdf in action](https://raw.githubusercontent.com/lanly-dev/vscode-seekdf/refs/heads/main/media/vscodeignore/seekdf-capture.png)
+![Seekdf in action](https://github.com/lanly-dev/vscode-seekdf/blob/main/media/vscodeignore/seekdf-capture.png?raw=true)
 
 ## Commands
 This extension provides the following commands:
@@ -18,6 +18,8 @@ This extension provides the following commands:
 - Moving items to the recycle bin is only supported on Windows
 
 ## Release Notes
+### 1.0.3
+- Minor changes
 
 ### 1.0.2
 - Only logo changes
