@@ -1,5 +1,5 @@
 import typescriptEslint from '@typescript-eslint/eslint-plugin'
-import stylisticTs from '@stylistic/eslint-plugin-ts'
+import stylistic from '@stylistic/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
 
 export default [{
@@ -9,7 +9,7 @@ export default [{
 }, {
   plugins: {
     '@typescript-eslint': typescriptEslint,
-    '@stylistic/ts': stylisticTs
+    '@stylistic': stylistic
   },
   languageOptions: {
     parser: tsParser,
@@ -18,7 +18,7 @@ export default [{
   },
   rules: {
     '@typescript-eslint/naming-convention': ['warn', { selector: 'import', format: ['camelCase', 'PascalCase'] }],
-    '@stylistic/ts/member-delimiter-style': [
+    '@stylistic/member-delimiter-style': [
       'error',
       {
         multiline: {

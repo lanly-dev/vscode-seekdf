@@ -4,6 +4,13 @@ All notable changes to the "seekdf" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.0.4] - 2025-06-05
+- Change color value to hex for banner
+- 9 files, 50.19 KB, 1.100.0
+
+### Notes:
+- Using value `black` instead of hex for banner color is not supported. For vscode marketplace, the black color won't render if select some sub-tabs in the page.  For open-vsx, it was fine at 1st, but crashed the page after couple days 🤔
+
 ## [1.0.3] - 2025-05-25
 - Just update configs and dependencies
 - Publish to [open-vsx](https://open-vsx.org/)
