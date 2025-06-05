@@ -9,7 +9,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - 9 files, 50.19 KB, 1.100.0
 
 ### Notes:
-- Using value `black` instead of hex for banner color is not supported. For vscode marketplace, the black color won't render if select some sub-tabs in the page.  For open-vsx, it was fine at 1st, but crashed the page after couple days 🤔
+- Using value `black` instead of hex for banner color is not supported. For vscode marketplace, the black color won't render if select some sub-tabs in the page. For open-vsx, it was fine at 1st, but crashed the page after couple days 🤔 -
+  > MUI: Unsupported `black` color. The following formats are supported: #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color().`
 
 ## [1.0.3] - 2025-05-25
 - Just update configs and dependencies
